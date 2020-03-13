@@ -1,0 +1,14 @@
+# Config file for the Sql wrapper library package.
+#
+# It defines the following variables:
+#  SQLWRAPPER_VERSION      - version of SQLWRAPPER
+#  SQLWRAPPER_FOUND        - set to true
+#  SQLWRAPPER_INCLUDE_DIRS - include directories for SkyBase Recording
+#  SQLWRAPPER_LIBRARY_DIR  - library directory for SkyBase Recording
+#  SQLWRAPPER_LIBRARIES    - libraries to link against
+
+set(SQLWRAPPER_VERSION "@PROJECT_VERSION@")
+set(SQLWRAPPER_FOUND "TRUE")
+set(SQLWRAPPER_INCLUDE_DIRS "@CMAKE_INSTALL_FULL_INCLUDEDIR@")
+set(SQLWRAPPER_LIBRARY_DIR "@CMAKE_INSTALL_FULL_LIBDIR@")
+set(SQLWRAPPER_LIBRARIES "@LINK_LIBRARIES@")
