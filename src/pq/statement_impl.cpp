@@ -28,7 +28,7 @@ namespace PqImpl
     void Statement::exec()
     {
         std::string errorMessage;
-        PGresult* res = _exec();
+        PGresult* res = StatementBase::execute();
         ExecStatusType execStatusType = PQresultStatus(res);
         if (execStatusType != PGRES_COMMAND_OK)
         {

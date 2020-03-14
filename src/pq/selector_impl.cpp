@@ -1,4 +1,5 @@
 #include "selector_impl.h"
+#include "db_row_impl.h"
 
 namespace PqImpl
 {
@@ -8,9 +9,14 @@ namespace PqImpl
     {
     }
 
-    void Selector::select(std::function<void(const Sql::DbRow & dbRow)> selectFunction)
+    void Selector::exec()
     {
-        PGresult* res = _exec();
+     // todo try to avoid this overriding
+    }
+
+    void Selector::select(std::function<void(std::unique_ptr<Sql::DbRow> dbRow)> && selectFunction)
+    {
+        PGresult* res = StatementBase::execute();
         if (PQresultStatus(res) != PGRES_TUPLES_OK)
         {
             std::string errorStr = PQerrorMessage(conn_);
@@ -36,17 +42,17 @@ namespace PqImpl
 
         for (int i = 0; i < rows; i++)
         {
-            Sql::DbRow rowData;
+            std::unique_ptr<PqImpl::DbRow> rowData = std::make_unique<PqImpl::DbRow>();
             for (int j = 0; j < nFields; j++)
             {
                 bool isNull = (PQgetisnull(res, i, j) == 1);
                 if (isNull)
-                    rowData.appendNull();
+                    rowData->appendNull();
                 else
-                    rowData.append(std::string(std::string(PQgetvalue(res, i, j))));
+                    rowData->append(std::string(std::string(PQgetvalue(res, i, j))));
             }
 
-            selectFunction(rowData);
+            selectFunction(std::move(rowData));
         }
 
         PQclear(res);

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <any>
 #include "connection_impl.h"
 #include "../statement_impl.h"
 
@@ -12,7 +11,7 @@ namespace PqImpl
         StatementBase(PGconn* conn);
 
     protected:
-        PGresult* _exec();
+        PGresult* execute();
 
     protected:
         PGconn* conn_;

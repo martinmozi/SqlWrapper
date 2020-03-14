@@ -29,7 +29,7 @@ set(LIB_PUBLIC_HEADERS
     ${LIB_INCLUDE_DIR}/transaction.h)
 
 set(LIB_CPP_SOURCES
-    ${LIB_SOURCE_DIR}/db_row.cpp
+    ${LIB_SOURCE_DIR}/db_row_impl.cpp
     ${LIB_SOURCE_DIR}/connection.cpp
     ${LIB_SOURCE_DIR}/selector.cpp
     ${LIB_SOURCE_DIR}/statement_impl.cpp
@@ -37,6 +37,7 @@ set(LIB_CPP_SOURCES
     ${LIB_SOURCE_DIR}/pq/statement_impl.cpp
     ${LIB_SOURCE_DIR}/pq/statement_base_impl.cpp
     ${LIB_SOURCE_DIR}/pq/selector_impl.cpp
+    ${LIB_SOURCE_DIR}/pq/db_row_impl.cpp
     ${LIB_SOURCE_DIR}/sqlite/sqlitedb.cpp)
 
 set(LIB_SOURCES ${LIB_PUBLIC_HEADERS} ${LIB_CPP_SOURCES})

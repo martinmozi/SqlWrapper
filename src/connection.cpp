@@ -3,6 +3,7 @@
 #ifdef PQ_BACKEND
 #include "pq/connection_impl.h"
 #include "pq/statement_impl.h"
+#include "pq/selector_impl.h"
 #endif
 
 #ifdef SQLITE_BACKEND
@@ -59,8 +60,8 @@ namespace Sql
         {
         case DbType::Postgres:
         {
-           /* DbImpl::PqConnection* pConnection = dynamic_cast<DbImpl::PqConnection*>(this);
-            return std::make_unique<DbImpl::PqStatement>(pConnection->connection());*/
+            PqImpl::Connection* pConnection = dynamic_cast<PqImpl::Connection*>(this);
+            return std::make_unique<PqImpl::Selector>(pConnection->connection(), false);
         }
         break;
 
@@ -73,25 +74,6 @@ namespace Sql
 
         return nullptr;
     }
-
-   /* class Statement : public DbImpl::PqStatement
-    {
-    public:
-        Statement(const Connection& connection) : DbImpl::PqStatement(connection.connection()) {}
-        virtual ~Statement() { rollback(); }
-    };
-
-    class Selector : public DbImpl::PqSelector
-    {
-    public:
-        Selector(const Connection& connection) : DbImpl::PqSelector(connection.connection(), false) {}
-    };
-
-    class SingleSelector : public DbImpl::PqSelector
-    {
-    public:
-        SingleSelector(const Connection& connection) : DbImpl::PqSelector(connection.connection(), true) {}
-    };*/
 }
 //#ifdef PQ_BACKEND
 //    Postgres = 1,

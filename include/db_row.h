@@ -2,37 +2,24 @@
 
 #include <vector>
 #include <string>
-#include <any>
-#include <type_traits>
 
 namespace Sql
 {
 	class DbRow
 	{
-		std::vector<std::string> rowData_;
-		std::vector<bool> nullData_;
-
-	public:
-		void append(const std::string & value);
-		void appendNull();
-
-	public:
-		DbRow();
-		bool isNull(int index) const;
-		void blobValue(int , std::string & ) const;
-		void blobValue(int , std::string & , const std::string &) const;
-
-		template<typename T> void value(int index, T & t, T nullValue) const
-		{
-			if (isNull(index))
-				t = nullValue;
-			else
-				value(index, t);
-		}
-
-		template<typename T> void value(int /*index*/, T & /*t*/) const;
-
-	private:
-		void checkIndex(int index) const;
+    public:
+		virtual bool isNull(int index) const = 0;
+        virtual void value(int index, int32_t & val) const = 0;
+        virtual void value(int index, int64_t & val) const = 0;
+        virtual void value(int index, bool & val) const = 0;
+        virtual void value(int index, double & val) const = 0;
+        virtual void value(int index, std::string& val) const = 0;
+        virtual void value(int index, std::vector<char>& val) const = 0;
+        virtual void nvlValue(int index, int32_t& val, int32_t valWhenNull) const = 0;
+        virtual void nvlValue(int index, int64_t& val, int64_t valWhenNull) const = 0;
+        virtual void nvlValue(int index, bool& val, bool valWhenNull) const = 0;
+        virtual void nvlValue(int index, double& val, double valWhenNull) const = 0;
+        virtual void nvlValue(int index, std::string& val, std::string valWhenNull) const = 0;
+		virtual void nvlValue(int index, std::vector<char>& val, std::vector<char> valWhenNull) const = 0;
 	};
 }

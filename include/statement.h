@@ -4,6 +4,7 @@
 
 namespace Sql
 {
+	// todo remove optionals here
     class Statement
 	{
 	public:

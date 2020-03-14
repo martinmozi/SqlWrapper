@@ -39,20 +39,20 @@ namespace DbImpl
         Statement() {}
         virtual ~Statement() {}
 
-        void prepare(const std::string& query);
-        void append(const std::string& appendQuery);
-        void bind(const std::string& key, int32_t value, std::optional<int32_t> nullValue = {});
-        void bind(const std::string& key, int64_t value, std::optional<int64_t> nullValue = {});
-        void bind(const std::string& key, bool value, std::optional<bool> nullValue = {});
-        void bind(const std::string& key, double value, std::optional<double> nullValue = {});
-        void bind(const std::string& key, const std::string& value, std::optional<std::string> nullValue = {});
-        void bindBlob(const std::string& key, const std::string& value, std::optional<std::string> nullValue = {});
-        void bindAndAppend(const std::string& appendedQuery, const std::string& key, int32_t value, std::optional<int> nullValue = {});
-        void bindAndAppend(const std::string& appendedQuery, const std::string& key, int64_t value, std::optional<int64_t> nullValue = {});
-        void bindAndAppend(const std::string& appendedQuery, const std::string& key, bool value, std::optional<bool> nullValue = {});
-        void bindAndAppend(const std::string& appendedQuery, const std::string& key, double value, std::optional<double> nullValue = {});
-        void bindAndAppend(const std::string& appendedQuery, const std::string& key, const std::string& value, std::optional<std::string> nullValue = {});
-        void bindBlobAndAppend(const std::string& appendedQuery, const std::string& key, const std::string& value, std::optional<std::string> nullValue = {});
+        void prepare(const std::string& query) override;
+        void append(const std::string& appendQuery) override;
+        void bind(const std::string& key, int32_t value, std::optional<int32_t> nullValue = {}) override;
+        void bind(const std::string& key, int64_t value, std::optional<int64_t> nullValue = {}) override;
+        void bind(const std::string& key, bool value, std::optional<bool> nullValue = {}) override;
+        void bind(const std::string& key, double value, std::optional<double> nullValue = {}) override;
+        void bind(const std::string& key, const std::string& value, std::optional<std::string> nullValue = {}) override;
+        void bindBlob(const std::string& key, const std::string& value, std::optional<std::string> nullValue = {}) override;
+        void bindAndAppend(const std::string& appendedQuery, const std::string& key, int32_t value, std::optional<int> nullValue = {}) override;
+        void bindAndAppend(const std::string& appendedQuery, const std::string& key, int64_t value, std::optional<int64_t> nullValue = {}) override;
+        void bindAndAppend(const std::string& appendedQuery, const std::string& key, bool value, std::optional<bool> nullValue = {}) override;
+        void bindAndAppend(const std::string& appendedQuery, const std::string& key, double value, std::optional<double> nullValue = {}) override;
+        void bindAndAppend(const std::string& appendedQuery, const std::string& key, const std::string& value, std::optional<std::string> nullValue = {}) override;
+        void bindBlobAndAppend(const std::string& appendedQuery, const std::string& key, const std::string& value, std::optional<std::string> nullValue = {}) override;
 
     private:
         template<class T> void bindData(const std::string& key, const T& value, std::optional<T> nullValue, DataType type)

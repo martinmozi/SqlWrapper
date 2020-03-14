@@ -49,7 +49,7 @@ namespace PqImpl
     {
     }
 
-    PGresult* StatementBase::_exec()
+    PGresult* StatementBase::execute()
     {
         bool bError = false;
         std::vector<char*> values;

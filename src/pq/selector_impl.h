@@ -5,11 +5,14 @@
 
 namespace PqImpl
 {
-    class Selector : public StatementBase, Sql::Selector
+    class Selector : public StatementBase, public Sql::Selector
     {
     public:
         Selector(PGconn* conn, bool isSingle);
-        void select(std::function<void(const Sql::DbRow & dbRow)> selectFunction) override;
+        void select(std::function<void(std::unique_ptr<Sql::DbRow> dbRow)> && selectFunction) override;
+
+    protected:
+        void exec() override;
 
     private:
         bool isSingle_;
