@@ -90,8 +90,8 @@ namespace PqImpl
             case DbImpl::DataType::Blob:
             {
                 size_t outLength = 0;
-                std::string str = std::any_cast<std::string>(_data.value);
-                unsigned char* dataStr = PQescapeByteaConn(conn_, (const unsigned char*)str.c_str(), str.size(), &outLength);
+                auto dataVector = std::any_cast<std::vector<unsigned char>>(_data.value);
+                unsigned char* dataStr = PQescapeByteaConn(conn_, dataVector.data(), dataVector.size(), &outLength);
                 if (dataStr == nullptr)
                 {
                     throw std::runtime_error("Unable to escape blob");

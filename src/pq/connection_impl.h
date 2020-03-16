@@ -1,15 +1,14 @@
 #pragma once
 
 #include <postgresql/libpq-fe.h>
-#include "../../include/connection.h"
+#include "../connection_impl.h"
 
 namespace PqImpl
 {
-	class Connection : public Sql::Connection
+	class Connection : public DbImpl::Connection
 	{
 	public:
 		Connection(const std::string & connectionString);
-		virtual ~Connection();
 
 		void connect() override;
 		void disconnect() override;
@@ -19,7 +18,6 @@ namespace PqImpl
 		void _connect();
 
 	private:
-		std::string connectionString_;
 		PGconn *conn_;
 	};
 }

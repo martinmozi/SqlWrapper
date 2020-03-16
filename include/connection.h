@@ -15,14 +15,9 @@ namespace Sql
     class Connection
     {
     public:
-        Connection(DbType dbType);
-        virtual void connect() = 0;
-        virtual void disconnect() = 0;
-        std::unique_ptr<Statement> createStatement();
-        std::unique_ptr<Selector> createSelector();
-
-    private:
-        DbType dbType_;
+        virtual ~Connection() = default;
+        virtual std::unique_ptr<Statement> createStatement(/*todo default start transaction to true*/) = 0;
+        virtual std::unique_ptr<Selector> createSelector() = 0;
     };
 
     std::unique_ptr<Connection> createConnection(DbType dbType, const std::string& connectionStr);

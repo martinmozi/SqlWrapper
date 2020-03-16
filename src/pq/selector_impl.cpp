@@ -9,7 +9,7 @@ namespace PqImpl
     {
     }
 
-    void Selector::select(std::function<void(std::unique_ptr<Sql::DbRow> dbRow)> && selectFunction)
+    void Selector::select(std::function<void(const Sql::DbRow & dbRow)> && selectFunction)
     {
         PGresult* res = StatementBase::execute();
         if (PQresultStatus(res) != PGRES_TUPLES_OK)
@@ -47,7 +47,7 @@ namespace PqImpl
                     rowData->append(std::string(std::string(PQgetvalue(res, i, j))));
             }
 
-            selectFunction(std::move(rowData));
+            selectFunction(*rowData.get());
         }
 
         PQclear(res);

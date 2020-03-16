@@ -8,7 +8,8 @@ namespace Sql
 	class DbRow
 	{
     public:
-		virtual bool isNull(int index) const = 0;
+        virtual ~DbRow() = default;
+        virtual bool isNull(int index) const = 0;
         virtual void value(int index, int32_t & val) const = 0;
         virtual void value(int index, int64_t & val) const = 0;
         virtual void value(int index, bool & val) const = 0;

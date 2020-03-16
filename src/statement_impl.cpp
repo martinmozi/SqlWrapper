@@ -113,6 +113,16 @@ namespace DbImpl
         bindData(key, value, nullValue, DataType::String);
     }
 
+    void Statement::bind(const std::string& key, const char * value)
+    {
+        bind(key, std::string(value));
+    }
+
+    void Statement::bind(const std::string& key, const char * value, const char * nullValue)
+    {
+        bind(key, std::string(value), std::string(nullValue));
+    }
+
     void Statement::bindBlob(const std::string& key, const std::vector<unsigned char>& value)
     {
         bindData(key, value, DataType::Blob);
@@ -181,6 +191,18 @@ namespace DbImpl
     {
         query_ += appendedQuery;
         bind(key, value, nullValue);
+    }
+
+    void Statement::bindAndAppend(const std::string& appendedQuery, const std::string& key, const char * value)
+    {
+        query_ += appendedQuery;
+        bind(key, std::string(value));
+    }
+
+    void Statement::bindAndAppend(const std::string& appendedQuery, const std::string& key, const char* value, const char* nullValue)
+    {
+        query_ += appendedQuery;
+        bind(key, std::string(value), std::string(nullValue));
     }
 
     void Statement::bindBlobAndAppend(const std::string& appendedQuery, const std::string& key, const std::vector<unsigned char>& value)

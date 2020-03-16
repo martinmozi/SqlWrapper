@@ -9,7 +9,7 @@ namespace PqImpl
     {
     public:
         Selector(PGconn* conn, bool isSingle);
-        void select(std::function<void(std::unique_ptr<Sql::DbRow> dbRow)> && selectFunction) override;
+        void select(std::function<void(const Sql::DbRow & dbRow)> && selectFunction) override;
 
     private:
         bool isSingle_;

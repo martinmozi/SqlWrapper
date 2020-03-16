@@ -1,14 +1,15 @@
 #pragma once
 
-#include <memory>
 #include <functional>
+#include "statement.h"
 #include "db_row.h"
 
 namespace Sql   
 {
-    class Selector
+    class Selector : public virtual Statement
     {
     public:
-        virtual void select(std::function<void(std::unique_ptr<Sql::DbRow> dbRow)> && selectFunction) = 0;
+        virtual ~Selector() = default;
+        virtual void select(std::function<void(const Sql::DbRow & dbRow)> && selectFunction) = 0;
     };
 }

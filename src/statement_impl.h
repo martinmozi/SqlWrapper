@@ -3,6 +3,8 @@
 #include <string>
 #include "../include/statement.h"
 
+// todo replace any with something non c++17
+
 namespace DbImpl
 {
     enum DataType
@@ -16,7 +18,7 @@ namespace DbImpl
         Blob,
     };
 
-    class Statement : public Sql::Statement
+    class Statement : public virtual Sql::Statement
     {
     protected:
         struct Data
@@ -37,7 +39,6 @@ namespace DbImpl
 
     public:
         Statement() = default;
-        virtual ~Statement() {}
 
         void exec() override;
         void prepare(const std::string& query) override;
@@ -47,24 +48,28 @@ namespace DbImpl
         void bind(const std::string& key, bool value) override;
         void bind(const std::string& key, double value) override;
         void bind(const std::string& key, const std::string& value) override;
+        void bind(const std::string& key, const char * value) override;
         void bindBlob(const std::string& key, const std::vector<unsigned char>& value) override;
         void bind(const std::string& key, int32_t value, int32_t nullValue) override;
         void bind(const std::string& key, int64_t value, int64_t nullValue) override;
         void bind(const std::string& key, bool value, bool nullValue) override;
         void bind(const std::string& key, double value, double nullValue) override;
         void bind(const std::string& key, const std::string& value, std::string nullValue) override;
+        void bind(const std::string& key, const char * value, const char * nullValue) override;
         void bindBlob(const std::string& key, const std::vector<unsigned char>& value, std::vector<unsigned char> nullValue) override;
         void bindAndAppend(const std::string& appendedQuery, const std::string& key, int32_t value) override;
         void bindAndAppend(const std::string& appendedQuery, const std::string& key, int64_t value) override;
         void bindAndAppend(const std::string& appendedQuery, const std::string& key, bool value) override;
         void bindAndAppend(const std::string& appendedQuery, const std::string& key, double value) override;
         void bindAndAppend(const std::string& appendedQuery, const std::string& key, const std::string& value) override;
+        void bindAndAppend(const std::string& appendedQuery, const std::string& key, const char* value) override;
         void bindBlobAndAppend(const std::string& appendedQuery, const std::string& key, const std::vector<unsigned char>& value) override;
         void bindAndAppend(const std::string& appendedQuery, const std::string& key, int32_t value, int32_t nullValue) override;
         void bindAndAppend(const std::string& appendedQuery, const std::string& key, int64_t value, int64_t nullValue) override;
         void bindAndAppend(const std::string& appendedQuery, const std::string& key, bool value, bool nullValue) override;
         void bindAndAppend(const std::string& appendedQuery, const std::string& key, double value, double nullValue) override;
         void bindAndAppend(const std::string& appendedQuery, const std::string& key, const std::string& value, std::string nullValue) override;
+        void bindAndAppend(const std::string& appendedQuery, const std::string& key, const char* value, const char* nullValue) override;
         void bindBlobAndAppend(const std::string& appendedQuery, const std::string& key, const std::vector<unsigned char>& value, std::vector<unsigned char> nullValue) override;
 
     private:

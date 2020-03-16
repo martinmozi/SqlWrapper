@@ -8,6 +8,18 @@ option(POSTGRESQL_BACKEND "build with PostgreSql support" ON)
 include(GNUInstallDirs) # Installation directories for `install` command and pkgconfig file
 find_package(PkgConfig)
 
+set(BACKEND_LIBRARIES "")
+if (POSTGRESQL_BACKEND)
+    find_package(PostgreSQL REQUIRED)
+    add_definitions(-DPQ_BACKEND)
+    set(BACKEND_LIBRARIES ${BACKEND_LIBRARIES} ${PostgreSQL_LIBRARIES})
+endif()
+
+if (SQLITE_BACKEND)
+    find_package(SQLite3 REQUIRED)
+    add_definitions(-DSQLITE_BACKEND)
+endif()
+
 set(CMAKE_CXX_STANDARD 17)
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     add_compile_options(-W -Wextra -Wall -Wno-gnu -pedantic)
@@ -30,7 +42,7 @@ set(LIB_PUBLIC_HEADERS
 
 set(LIB_CPP_SOURCES
     ${LIB_SOURCE_DIR}/db_row_impl.cpp
-    ${LIB_SOURCE_DIR}/connection.cpp
+    ${LIB_SOURCE_DIR}/connection_impl.cpp
     ${LIB_SOURCE_DIR}/selector.cpp
     ${LIB_SOURCE_DIR}/statement_impl.cpp
     ${LIB_SOURCE_DIR}/pq/connection_impl.cpp
@@ -41,24 +53,13 @@ set(LIB_CPP_SOURCES
     ${LIB_SOURCE_DIR}/sqlite/sqlitedb.cpp)
 
 set(LIB_SOURCES ${LIB_PUBLIC_HEADERS} ${LIB_CPP_SOURCES})
-
-set(BACKEND_LIBRARIES "")
-if (POSTGRESQL_BACKEND)
-    find_package(PostgreSQL REQUIRED)
-    add_definitions(-DPQ_BACKEND)
-    set(BACKEND_LIBRARIES ${BACKEND_LIBRARIES} ${PostgreSQL_LIBRARIES})
-endif()
-
-if (SQLITE_BACKEND)
-    find_package(SQLite3 REQUIRED)
-    add_definitions(-DSQLITE_BACKEND)
-endif()
-
 add_library(sql-wrapper-objects OBJECT ${LIB_SOURCES})
 set_target_properties(sql-wrapper-objects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 add_library(sql-wrapper SHARED $<TARGET_OBJECTS:sql-wrapper-objects>)
 add_library(sql-wrapper-static STATIC $<TARGET_OBJECTS:sql-wrapper-objects>)
+target_link_libraries(sql-wrapper ${BACKEND_LIBRARIES})
+target_link_libraries(sql-wrapper-static ${BACKEND_LIBRARIES})
 
 set_target_properties(sql-wrapper
     PROPERTIES

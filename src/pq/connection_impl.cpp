@@ -3,15 +3,9 @@
 namespace PqImpl
 {
     Connection::Connection(const std::string& connectionString)
-    :   Sql::Connection(Sql::DbType::Postgres),
-        connectionString_(connectionString),
+    :   DbImpl::Connection(Sql::DbType::Postgres, connectionString),
         conn_(nullptr)
     {
-    }
-
-    Connection::~Connection()
-    {
-        disconnect();
     }
 
     void Connection::connect()
