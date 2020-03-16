@@ -36,44 +36,50 @@ namespace DbImpl
         const std::vector<Data>& data() const;
 
     public:
-        Statement() {}
+        Statement() = default;
         virtual ~Statement() {}
 
+        void exec() override;
         void prepare(const std::string& query) override;
         void append(const std::string& appendQuery) override;
-        void bind(const std::string& key, int32_t value, std::optional<int32_t> nullValue = {}) override;
-        void bind(const std::string& key, int64_t value, std::optional<int64_t> nullValue = {}) override;
-        void bind(const std::string& key, bool value, std::optional<bool> nullValue = {}) override;
-        void bind(const std::string& key, double value, std::optional<double> nullValue = {}) override;
-        void bind(const std::string& key, const std::string& value, std::optional<std::string> nullValue = {}) override;
-        void bindBlob(const std::string& key, const std::string& value, std::optional<std::string> nullValue = {}) override;
-        void bindAndAppend(const std::string& appendedQuery, const std::string& key, int32_t value, std::optional<int> nullValue = {}) override;
-        void bindAndAppend(const std::string& appendedQuery, const std::string& key, int64_t value, std::optional<int64_t> nullValue = {}) override;
-        void bindAndAppend(const std::string& appendedQuery, const std::string& key, bool value, std::optional<bool> nullValue = {}) override;
-        void bindAndAppend(const std::string& appendedQuery, const std::string& key, double value, std::optional<double> nullValue = {}) override;
-        void bindAndAppend(const std::string& appendedQuery, const std::string& key, const std::string& value, std::optional<std::string> nullValue = {}) override;
-        void bindBlobAndAppend(const std::string& appendedQuery, const std::string& key, const std::string& value, std::optional<std::string> nullValue = {}) override;
+        void bind(const std::string& key, int32_t value) override;
+        void bind(const std::string& key, int64_t value) override;
+        void bind(const std::string& key, bool value) override;
+        void bind(const std::string& key, double value) override;
+        void bind(const std::string& key, const std::string& value) override;
+        void bindBlob(const std::string& key, const std::vector<unsigned char>& value) override;
+        void bind(const std::string& key, int32_t value, int32_t nullValue) override;
+        void bind(const std::string& key, int64_t value, int64_t nullValue) override;
+        void bind(const std::string& key, bool value, bool nullValue) override;
+        void bind(const std::string& key, double value, double nullValue) override;
+        void bind(const std::string& key, const std::string& value, std::string nullValue) override;
+        void bindBlob(const std::string& key, const std::vector<unsigned char>& value, std::vector<unsigned char> nullValue) override;
+        void bindAndAppend(const std::string& appendedQuery, const std::string& key, int32_t value) override;
+        void bindAndAppend(const std::string& appendedQuery, const std::string& key, int64_t value) override;
+        void bindAndAppend(const std::string& appendedQuery, const std::string& key, bool value) override;
+        void bindAndAppend(const std::string& appendedQuery, const std::string& key, double value) override;
+        void bindAndAppend(const std::string& appendedQuery, const std::string& key, const std::string& value) override;
+        void bindBlobAndAppend(const std::string& appendedQuery, const std::string& key, const std::vector<unsigned char>& value) override;
+        void bindAndAppend(const std::string& appendedQuery, const std::string& key, int32_t value, int32_t nullValue) override;
+        void bindAndAppend(const std::string& appendedQuery, const std::string& key, int64_t value, int64_t nullValue) override;
+        void bindAndAppend(const std::string& appendedQuery, const std::string& key, bool value, bool nullValue) override;
+        void bindAndAppend(const std::string& appendedQuery, const std::string& key, double value, double nullValue) override;
+        void bindAndAppend(const std::string& appendedQuery, const std::string& key, const std::string& value, std::string nullValue) override;
+        void bindBlobAndAppend(const std::string& appendedQuery, const std::string& key, const std::vector<unsigned char>& value, std::vector<unsigned char> nullValue) override;
 
     private:
-        template<class T> void bindData(const std::string& key, const T& value, std::optional<T> nullValue, DataType type)
+        template<class T> void bindData(const std::string& key, const T& value, DataType type)
         {
             Data data;
             data.name = key;
-            if (nullValue && *nullValue == value)
-            {
-                //tuto to nefunguje
-    //				2018-04-08 16:40:09 CEST ERROR:  bind message supplies 3 parameters, but prepared statement "" requires 4
-    //				2018-04-08 16:40:09 CEST STATEMENT:  INSERT INTO draft_participants(id, draftid, addressid, address, type) VALUES(nextval('seq_draft_participants') , $1, $4, $2, $3)
-
-                data.type = DataType::Null;
-            }
-            else
-            {
-                data.type = type;
-                data.value = value;
-            }
-
+            data.type = type;
+            data.value = value;
             data_.push_back(data);
+        }
+
+        template<class T> void bindData(const std::string& key, const T& value, T nullValue, DataType type)
+        {
+            bindData(key, value, (nullValue == value) ? DataType::Null : type);
         }
     };
 }

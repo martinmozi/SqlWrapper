@@ -9,11 +9,6 @@ namespace PqImpl
     {
     }
 
-    void Selector::exec()
-    {
-     // todo try to avoid this overriding
-    }
-
     void Selector::select(std::function<void(std::unique_ptr<Sql::DbRow> dbRow)> && selectFunction)
     {
         PGresult* res = StatementBase::execute();

@@ -1,4 +1,5 @@
 #include "statement_impl.h"
+#include <stdexcept>
 
 namespace DbImpl
 {
@@ -47,6 +48,10 @@ namespace DbImpl
             index++;
     }
 
+    void Statement::exec()
+    {
+    }
+
     void Statement::prepare(const std::string& query)
     {
         query_ = query;
@@ -58,69 +63,135 @@ namespace DbImpl
         query_ += appendQuery;
     }
 
-    void Statement::bind(const std::string& key, int32_t value, std::optional<int32_t> nullValue)
+    void Statement::bind(const std::string& key, int32_t value)
+    {
+        bindData(key, value, DataType::Int);
+    }
+
+    void Statement::bind(const std::string& key, int32_t value, int32_t nullValue)
     {
         bindData(key, value, nullValue, DataType::Int);
     }
 
-    void Statement::bind(const std::string& key, int64_t value, std::optional<int64_t> nullValue)
+    void Statement::bind(const std::string& key, int64_t value)
+    {
+        bindData(key, value, DataType::BigInt);
+    }
+
+    void Statement::bind(const std::string& key, int64_t value, int64_t nullValue)
     {
         bindData(key, value, nullValue, DataType::BigInt);
     }
 
-    void Statement::bind(const std::string& key, bool value, std::optional<bool> nullValue)
+    void Statement::bind(const std::string& key, bool value)
+    {
+        bindData(key, value, DataType::Bool);
+    }
+
+    void Statement::bind(const std::string& key, bool value, bool nullValue)
     {
         bindData(key, value, nullValue, DataType::Bool);
     }
 
-    void Statement::bind(const std::string& key, double value, std::optional<double> nullValue)
+    void Statement::bind(const std::string& key, double value)
+    {
+        bindData(key, value, DataType::Double);
+    }
+
+    void Statement::bind(const std::string& key, double value, double nullValue)
     {
         bindData(key, value, nullValue, DataType::Double);
     }
 
-    void Statement::bind(const std::string& key, const std::string& value, std::optional<std::string> nullValue)
+    void Statement::bind(const std::string& key, const std::string& value)
+    {
+        bindData(key, value, DataType::String);
+    }
+
+    void Statement::bind(const std::string& key, const std::string& value, std::string nullValue)
     {
         bindData(key, value, nullValue, DataType::String);
     }
 
-    void Statement::bindBlob(const std::string& key, const std::string& value, std::optional<std::string> nullValue)
+    void Statement::bindBlob(const std::string& key, const std::vector<unsigned char>& value)
+    {
+        bindData(key, value, DataType::Blob);
+    }
+
+    void Statement::bindBlob(const std::string& key, const std::vector<unsigned char>& value, std::vector<unsigned char> nullValue)
     {
         bindData(key, value, nullValue, DataType::Blob);
     }
 
-    void Statement::bindAndAppend(const std::string& appendedQuery, const std::string& key, int32_t value, std::optional<int> nullValue)
+    void Statement::bindAndAppend(const std::string& appendedQuery, const std::string& key, int32_t value)
+    {
+        query_ += appendedQuery;
+        bind(key, value);
+    }
+
+    void Statement::bindAndAppend(const std::string& appendedQuery, const std::string& key, int32_t value, int32_t nullValue)
     {
         query_ += appendedQuery;
         bind(key, value, nullValue);
     }
 
-    void Statement::bindAndAppend(const std::string& appendedQuery, const std::string& key, int64_t value, std::optional<int64_t> nullValue)
+    void Statement::bindAndAppend(const std::string& appendedQuery, const std::string& key, int64_t value)
+    {
+        query_ += appendedQuery;
+        bind(key, value);
+    }
+
+    void Statement::bindAndAppend(const std::string& appendedQuery, const std::string& key, int64_t value, int64_t nullValue)
     {
         query_ += appendedQuery;
         bind(key, value, nullValue);
     }
 
-    void Statement::bindAndAppend(const std::string& appendedQuery, const std::string& key, bool value, std::optional<bool> nullValue)
+    void Statement::bindAndAppend(const std::string& appendedQuery, const std::string& key, bool value)
+    {
+        query_ += appendedQuery;
+        bind(key, value);
+    }
+
+    void Statement::bindAndAppend(const std::string& appendedQuery, const std::string& key, bool value, bool nullValue)
     {
         query_ += appendedQuery;
         bind(key, value, nullValue);
     }
 
-    void Statement::bindAndAppend(const std::string& appendedQuery, const std::string& key, double value, std::optional<double> nullValue)
+    void Statement::bindAndAppend(const std::string& appendedQuery, const std::string& key, double value)
+    {
+        query_ += appendedQuery;
+        bind(key, value);
+    }
+
+    void Statement::bindAndAppend(const std::string& appendedQuery, const std::string& key, double value, double nullValue)
     {
         query_ += appendedQuery;
         bind(key, value, nullValue);
     }
 
-    void Statement::bindAndAppend(const std::string& appendedQuery, const std::string& key, const std::string& value, std::optional<std::string> nullValue)
+    void Statement::bindAndAppend(const std::string& appendedQuery, const std::string& key, const std::string& value)
+    {
+        query_ += appendedQuery;
+        bind(key, value);
+    }
+
+    void Statement::bindAndAppend(const std::string& appendedQuery, const std::string& key, const std::string& value, std::string nullValue)
     {
         query_ += appendedQuery;
         bind(key, value, nullValue);
     }
 
-    void Statement::bindBlobAndAppend(const std::string& appendedQuery, const std::string& key, const std::string& value, std::optional<std::string> nullValue)
+    void Statement::bindBlobAndAppend(const std::string& appendedQuery, const std::string& key, const std::vector<unsigned char>& value)
     {
         query_ += appendedQuery;
-        bind(key, value, nullValue);
+        bindBlob(key, value);
+    }
+
+    void Statement::bindBlobAndAppend(const std::string& appendedQuery, const std::string& key, const std::vector<unsigned char>& value, std::vector<unsigned char> nullValue)
+    {
+        query_ += appendedQuery;
+        bindBlob(key, value, nullValue);
     }
 }

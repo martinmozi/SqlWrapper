@@ -4,11 +4,6 @@
 
 namespace DbImpl
 {
-    DbRow::DbRow()
-    {
-        // todo use default constructor if possible
-    }
-
     void DbRow::append(const std::string& val)
     {
         rowData_.push_back(val);
@@ -53,11 +48,6 @@ namespace DbImpl
         }
     }
 
-    void DbRow::value(int /*index*/, bool& /*val*/) const
-    {
-        // todo try to remove this empty implementation
-    }
-
     void DbRow::value(int index, double& val) const
     {
         size_t sz = 0;
@@ -75,12 +65,6 @@ namespace DbImpl
     {
         checkIndex(index);
         val = rowData_.at(index);
-    }
-
-    void DbRow::value(int index, std::vector<char>& val) const
-    {
-        // todo implement reading blob - probably db specific
-        assert(0);
     }
 
     void DbRow::nvlValue(int index, int32_t& val, int32_t valWhenNull) const

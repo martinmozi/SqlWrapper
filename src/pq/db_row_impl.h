@@ -7,7 +7,8 @@ namespace PqImpl
     class DbRow : public DbImpl::DbRow
     {
     public:
-        DbRow();
+        DbRow() = default;
         void value(int index, bool& val) const override;
+        void value(int index, std::vector<char>& val) const override;
     };
 }

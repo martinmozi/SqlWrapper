@@ -13,14 +13,14 @@ namespace DbImpl
 		std::vector<bool> nullData_;
 
 	public:
-		DbRow();
+		DbRow() = default;
         bool isNull(int index) const override;
+        virtual void value(int index, bool& val) const = 0;
+        virtual void value(int index, std::vector<char>& val) const = 0;
         void value(int index, int32_t& val) const override;
         void value(int index, int64_t& val) const override;
-        void value(int index, bool& val) const override;
-        void value(int /*index*/, double& /*val*/) const override;
+        void value(int index, double& val) const override;
         void value(int index, std::string& val) const override;
-        void value(int index, std::vector<char>& val) const override;
         void nvlValue(int index, int32_t& val, int32_t valWhenNull) const override;
         void nvlValue(int index, int64_t& val, int64_t valWhenNull) const override;
         void nvlValue(int index, bool& val, bool valWhenNull) const override;
