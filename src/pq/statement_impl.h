@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../../include/transaction.h"
 #include "statement_base_impl.h"
 
 namespace PqImpl
 {
-    class Statement : public StatementBase, public Sql::Transaction
+    class Statement : public StatementBase
     {
     public:
         Statement(PGconn* conn);

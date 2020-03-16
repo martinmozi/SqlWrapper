@@ -2,10 +2,11 @@
 
 #include <vector>
 #include <string>
+#include "transaction.h"
 
 namespace Sql
 {
-    class Statement
+    class Statement : public Transaction
 	{
 	public:
         virtual ~Statement() = default;
