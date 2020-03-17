@@ -1,11 +1,8 @@
 #pragma once
 
-#include <any>
 #include <vector>
 #include <string>
 #include "../include/statement.h"
-
-// todo replace any with something non c++17
 
 namespace DbImpl
 {
@@ -25,12 +22,22 @@ namespace DbImpl
     protected:
         struct Data
         {
-            std::string name;
-            std::any value;
-            DataType type;
+            std::string name_;
+            void *value_;
+            DataType type_;
+
+            Data();
+            Data(Data&& d);
+            Data& operator=(Data&& d);
+            Data(const Data&) = delete;
+            Data& operator=(const Data&) = delete;
+            ~Data();
+
+            template<typename T> void setValue(std::string name, const T & value);
+            template<typename T> const T& value() const { return *((T*)value_); }
         };
 
-    private:
+    protected:
         std::string query_;
         std::vector<Data> data_;
 
@@ -74,18 +81,26 @@ namespace DbImpl
         void bindBlobAndAppend(const std::string& appendedQuery, const std::string& key, const std::vector<unsigned char>& value, std::vector<unsigned char> nullValue) override;
 
     private:
-        template<class T> void bindData(const std::string& key, const T& value, DataType type)
+        void bindNull(const std::string& key)
         {
             Data data;
-            data.name = key;
-            data.type = type;
-            data.value = value;
-            data_.push_back(data);
+            data.name_ = key;
+            data_.push_back(std::move(data));
         }
 
-        template<class T> void bindData(const std::string& key, const T& value, T nullValue, DataType type)
+        template<class T> void bindData(const std::string& key, const T& value)
         {
-            bindData(key, value, (nullValue == value) ? DataType::Null : type);
+            Data data;
+            data.setValue(key, value);
+            data_.push_back(std::move(data));
+        }
+
+        template<class T> void bindData(const std::string& key, const T& value, T nullValue)
+        {
+            if(nullValue == value)
+                bindNull(key);
+            else
+                bindData(key, value);
         }
     };
 }

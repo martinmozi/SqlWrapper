@@ -58,39 +58,39 @@ namespace PqImpl
 
         int index = 1;
         for (const DbImpl::Statement::Data& _data : data)
-            replaceBindedParameter(_data.name, _data.type == DbImpl::DataType::Null, index);
+            replaceBindedParameter(_data.name_, _data.type_ == DbImpl::DataType::Null, index);
 
         for (const DbImpl::Statement::Data& _data : data)
         {
-            switch (_data.type)
+            switch (_data.type_)
             {
             case DbImpl::DataType::Null:
                 break;
 
             case DbImpl::DataType::Bool:
-                appendBinaryPqBind(std::any_cast<bool>(_data.value), values, lengths, binaries);
+                appendBinaryPqBind(_data.value<bool>(), values, lengths, binaries);
                 break;
 
             case DbImpl::DataType::Int:
-                appendBinaryPqBind(std::any_cast<int32_t>(_data.value), values, lengths, binaries);
+                appendBinaryPqBind(_data.value<int32_t>(), values, lengths, binaries);
                 break;
 
             case DbImpl::DataType::BigInt:
-                appendBinaryPqBind(std::any_cast<int64_t>(_data.value), values, lengths, binaries);
+                appendBinaryPqBind(_data.value<int64_t>(), values, lengths, binaries);
                 break;
 
             case DbImpl::DataType::Double:
-                appendBinaryPqBind(std::any_cast<double>(_data.value), values, lengths, binaries);
+                appendBinaryPqBind(_data.value<double>(), values, lengths, binaries);
                 break;
 
             case DbImpl::DataType::String:
-                appendStringPqBind(std::any_cast<std::string>(_data.value).c_str(), values, lengths, binaries);
+                appendStringPqBind(_data.value<std::string>().c_str(), values, lengths, binaries);
                 break;
 
             case DbImpl::DataType::Blob:
             {
                 size_t outLength = 0;
-                auto dataVector = std::any_cast<std::vector<unsigned char>>(_data.value);
+                auto dataVector = _data.value<std::vector<unsigned char>>();
                 unsigned char* dataStr = PQescapeByteaConn(conn_, dataVector.data(), dataVector.size(), &outLength);
                 if (dataStr == nullptr)
                 {

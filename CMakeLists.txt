@@ -32,10 +32,11 @@ if (SQLITE_BACKEND)
         ${LIB_SOURCE_DIR}/sqlite/connection_impl.cpp
         ${LIB_SOURCE_DIR}/sqlite/transaction_impl.cpp
         ${LIB_SOURCE_DIR}/sqlite/statement_impl.cpp
+        ${LIB_SOURCE_DIR}/sqlite/selector_impl.cpp
         ${LIB_SOURCE_DIR}/sqlite/sqlite3.c)
 endif()
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     add_compile_options(-W -Wextra -Wall -Wno-gnu -pedantic)
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")

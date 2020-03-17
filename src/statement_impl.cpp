@@ -3,6 +3,114 @@
 
 namespace DbImpl
 {
+    Statement::Data::Data()
+    :   value_(nullptr),
+        type_(DataType::Null)
+    {
+    }
+
+    Statement::Data::Data(Data&& d)
+    :   name_(d.name_),
+        value_(d.value_),
+        type_(d.type_)
+    {
+        d.name_ = "";
+        d.value_ = nullptr;
+        d.type_ = DataType::Null;
+    }
+
+    Statement::Data& Statement::Data::operator=(Data&& d)
+    {
+        name_ = d.name_;
+        value_ = d.value_;
+        type_ = d.type_;
+        d.name_ = "";
+        d.value_ = nullptr;
+        d.type_ = DataType::Null;
+        return *this;
+    }
+
+    Statement::Data::~Data()
+    {
+        switch (type_)
+        {
+            case Null:
+            break;
+
+            case Bool:
+                delete ((bool*)value_);
+                break;
+
+            case BigInt:
+                delete ((int64_t*)value_);
+                break;
+
+            case Int:
+                delete ((int32_t*)value_);
+                break;
+
+            case Double:
+                delete ((double*)value_);
+                break;
+
+            case String:
+                delete ((std::string*)value_);
+                break;
+
+            case Blob:
+                delete ((std::vector<unsigned char>*)value_);
+                break;
+
+            default:
+            break;
+        }
+    }
+
+    template<> void Statement::Data::setValue(std::string name, const bool& value)
+    {
+        value_ = new bool(value);
+        type_ = DataType::Bool;
+        name_ = name;
+    }
+
+    template<> void Statement::Data::setValue(std::string name, const int32_t& value)
+    {
+        value_ = new int32_t(value);
+        type_ = DataType::Int;
+        name_ = name;
+    }
+
+    template<> void Statement::Data::setValue(std::string name, const int64_t&  value)
+    {
+        value_ = new int64_t(value);
+        type_ = DataType::BigInt;
+        name_ = name;
+    }
+
+    template<> void Statement::Data::setValue(std::string name, const double& value)
+    {
+        value_ = new double(value);
+        type_ = DataType::Double;
+        name_ = name;
+    }
+
+    template<> void Statement::Data::setValue(std::string name, const std::string& value)
+    {
+        value_ = new std::string(value);
+        type_ = DataType::String;
+        name_ = name;
+    }
+
+    template<> void Statement::Data::setValue(std::string name, const std::vector<unsigned char>& value)
+    {
+        value_ = new std::vector<unsigned char>(value);
+        type_ = DataType::Blob;
+        name_ = name;
+    }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     const char* Statement::query() const
     {
         return query_.c_str();
@@ -61,52 +169,52 @@ namespace DbImpl
 
     void Statement::bind(const std::string& key, int32_t value)
     {
-        bindData(key, value, DataType::Int);
+        bindData(key, value);
     }
 
     void Statement::bind(const std::string& key, int32_t value, int32_t nullValue)
     {
-        bindData(key, value, nullValue, DataType::Int);
+        bindData(key, value, nullValue);
     }
 
     void Statement::bind(const std::string& key, int64_t value)
     {
-        bindData(key, value, DataType::BigInt);
+        bindData(key, value);
     }
 
     void Statement::bind(const std::string& key, int64_t value, int64_t nullValue)
     {
-        bindData(key, value, nullValue, DataType::BigInt);
+        bindData(key, value, nullValue);
     }
 
     void Statement::bind(const std::string& key, bool value)
     {
-        bindData(key, value, DataType::Bool);
+        bindData(key, value);
     }
 
     void Statement::bind(const std::string& key, bool value, bool nullValue)
     {
-        bindData(key, value, nullValue, DataType::Bool);
+        bindData(key, value, nullValue);
     }
 
     void Statement::bind(const std::string& key, double value)
     {
-        bindData(key, value, DataType::Double);
+        bindData(key, value);
     }
 
     void Statement::bind(const std::string& key, double value, double nullValue)
     {
-        bindData(key, value, nullValue, DataType::Double);
+        bindData(key, value, nullValue);
     }
 
     void Statement::bind(const std::string& key, const std::string& value)
     {
-        bindData(key, value, DataType::String);
+        bindData(key, value);
     }
 
     void Statement::bind(const std::string& key, const std::string& value, std::string nullValue)
     {
-        bindData(key, value, nullValue, DataType::String);
+        bindData(key, value, nullValue);
     }
 
     void Statement::bind(const std::string& key, const char * value)
@@ -121,12 +229,12 @@ namespace DbImpl
 
     void Statement::bindBlob(const std::string& key, const std::vector<unsigned char>& value)
     {
-        bindData(key, value, DataType::Blob);
+        bindData(key, value);
     }
 
     void Statement::bindBlob(const std::string& key, const std::vector<unsigned char>& value, std::vector<unsigned char> nullValue)
     {
-        bindData(key, value, nullValue, DataType::Blob);
+        bindData(key, value, nullValue);
     }
 
     void Statement::bindAndAppend(const std::string& appendedQuery, const std::string& key, int32_t value)

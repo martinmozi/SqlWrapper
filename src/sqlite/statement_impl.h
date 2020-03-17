@@ -9,7 +9,7 @@ namespace SqliteImpl
     {
     public:
         Statement(sqlite3* conn);
-       // void exec() override;
+        sqlite3_stmt* execute();
 
     private:
         sqlite3 * conn_;
