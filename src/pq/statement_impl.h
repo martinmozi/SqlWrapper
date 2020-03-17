@@ -1,22 +1,17 @@
 #pragma once
 
-#include "statement_base_impl.h"
+#include "connection_impl.h"
+#include "../statement_impl.h"
 
 namespace PqImpl
 {
-    class Statement : public StatementBase
+    class Statement : public DbImpl::Statement
     {
     public:
         Statement(PGconn* conn);
-        void exec() override;
-        void begin() override;
-        void commit() override;
-        void rollback() override;
+        PGresult* execute();
 
-    private:
-        void _begin();
-
-    private:
-        bool bRunningTransaction_;
+    protected:
+        PGconn* conn_;
     };
 }

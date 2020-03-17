@@ -1,3 +1,5 @@
+#pragma once
+
 #include <any>
 #include <vector>
 #include <string>
@@ -18,7 +20,7 @@ namespace DbImpl
         Blob,
     };
 
-    class Statement : public virtual Sql::Statement
+    class Statement : public Sql::Statement
     {
     protected:
         struct Data
@@ -40,7 +42,6 @@ namespace DbImpl
     public:
         Statement() = default;
 
-        void exec() override;
         void prepare(const std::string& query) override;
         void append(const std::string& appendQuery) override;
         void bind(const std::string& key, int32_t value) override;

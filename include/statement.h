@@ -2,15 +2,13 @@
 
 #include <vector>
 #include <string>
-#include "transaction.h"
 
 namespace Sql
 {
-    class Statement : public Transaction
+    class Statement
 	{
 	public:
         virtual ~Statement() = default;
-        virtual void exec() = 0;
         virtual void prepare(const std::string& query) = 0;
         virtual void append(const std::string& appendQuery) = 0;
         virtual void bind(const std::string& key, int32_t value) = 0;

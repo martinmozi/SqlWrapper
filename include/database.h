@@ -1,7 +1,25 @@
 #pragma once
 
-#include "connection.h"
+#include <memory>
 #include "statement.h"
+#include "transaction_statement.h"
 #include "selector.h"
-#include "db_row.h"
-#include "transaction.h"
+
+namespace Sql
+{
+    enum DbType
+    {
+        Postgres,
+        Sqlite,
+    };
+
+    class Connection
+    {
+    public:
+        virtual ~Connection() = default;
+        virtual std::unique_ptr<TransactionStatement> createStatement(/*todo default start transaction to true*/) = 0;
+        virtual std::unique_ptr<Selector> createSelector() = 0;
+    };
+
+    std::unique_ptr<Connection> createConnection(DbType dbType, const std::string& connectionStr);
+}

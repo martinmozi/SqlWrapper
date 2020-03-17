@@ -6,7 +6,7 @@
 
 namespace Sql   
 {
-    class Selector : public virtual Statement
+    class Selector : public Statement
     {
     public:
         virtual ~Selector() = default;

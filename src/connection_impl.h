@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../include/connection.h"
+#include "../include/database.h"
 
 namespace DbImpl
 {
@@ -10,7 +10,7 @@ namespace DbImpl
         static std::unique_ptr<Sql::Connection> createConnection(Sql::DbType dbType, const std::string& connectionStr);
         Connection(Sql::DbType dbType, const std::string& connectionStr);
         virtual ~Connection();
-        std::unique_ptr<Sql::Statement> createStatement() override;
+        std::unique_ptr<Sql::TransactionStatement> createStatement() override;
         std::unique_ptr<Sql::Selector> createSelector() override;
 
         virtual void connect() = 0;

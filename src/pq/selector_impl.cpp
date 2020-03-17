@@ -4,14 +4,15 @@
 namespace PqImpl
 {
     Selector::Selector(PGconn* conn, bool isSingle)
-    :   StatementBase(conn),
+    :   conn_(conn),
+        statement_(conn),
         isSingle_(isSingle)
     {
     }
 
     void Selector::select(std::function<void(const Sql::DbRow & dbRow)> && selectFunction)
     {
-        PGresult* res = StatementBase::execute();
+        PGresult* res = statement_.execute();
         if (PQresultStatus(res) != PGRES_TUPLES_OK)
         {
             std::string errorStr = PQerrorMessage(conn_);

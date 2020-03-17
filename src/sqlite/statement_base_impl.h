@@ -3,9 +3,9 @@
 #include "connection_impl.h"
 #include "../statement_impl.h"
 
-namespace PqImpl
+namespace SqliteImpl
 {
-    class StatementBase : public DbImpl::Statement
+   /* class StatementBase : public DbImpl::Statement
     {
     public:
         StatementBase(PGconn* conn);
@@ -15,5 +15,5 @@ namespace PqImpl
 
     protected:
         PGconn* conn_;
-    };
+    };*/
 }

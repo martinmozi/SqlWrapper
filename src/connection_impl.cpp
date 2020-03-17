@@ -2,12 +2,12 @@
 
 #ifdef PQ_BACKEND
 #include "pq/connection_impl.h"
-#include "pq/statement_impl.h"
+#include "pq/transaction_statement_impl.h"
 #include "pq/selector_impl.h"
 #endif
 
 #ifdef SQLITE_BACKEND
-#include "sqlite/sqlitedb.h"
+#include "sqlite/connection_impl.h"
 #endif
 
 namespace DbImpl
@@ -23,17 +23,22 @@ namespace DbImpl
         disconnect();
     }
 
-    std::unique_ptr<Sql::Statement> Connection::createStatement()
+    std::unique_ptr<Sql::TransactionStatement> Connection::createStatement()
     {
         switch (dbType_)
         {
         case Sql::DbType::Postgres:
         {
             PqImpl::Connection* pConnection = dynamic_cast<PqImpl::Connection*>(this);
-            return std::make_unique<PqImpl::Statement>(pConnection->connection());
+            return std::make_unique<PqImpl::TransactionStatement>(pConnection->connection());
         }
+        break;
 
         case Sql::DbType::Sqlite:
+        {
+            //SqliteImpl::Connection* pConnection = dynamic_cast<SqliteImpl::Connection*>(this);
+            //return std::make_unique<SqliteImpl::TransactionStatement>(pConnection->connection());
+        }
             break;
 
         default:
@@ -55,7 +60,11 @@ namespace DbImpl
         break;
 
         case Sql::DbType::Sqlite:
-            break;
+            /*{
+                SqliteImpl::Connection* pConnection = dynamic_cast<SqliteImpl::Connection*>(this);
+                return std::make_unique<SqliteImpl::Selector>(pConnection->connection(), false);
+            }*/
+        break;
 
         default:
             break;
@@ -94,6 +103,7 @@ namespace Sql
             break;
 
         case DbType::Sqlite:
+            connection = std::make_unique<SqliteImpl::Connection>(connectionStr);
             break;
 
         default:

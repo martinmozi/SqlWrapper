@@ -48,10 +48,6 @@ namespace DbImpl
             index++;
     }
 
-    void Statement::exec()
-    {
-    }
-
     void Statement::prepare(const std::string& query)
     {
         query_ = query;

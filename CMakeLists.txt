@@ -8,16 +8,31 @@ option(POSTGRESQL_BACKEND "build with PostgreSql support" ON)
 include(GNUInstallDirs) # Installation directories for `install` command and pkgconfig file
 find_package(PkgConfig)
 
+set(LIB_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
+set(LIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
+
 set(BACKEND_LIBRARIES "")
 if (POSTGRESQL_BACKEND)
     find_package(PostgreSQL REQUIRED)
     add_definitions(-DPQ_BACKEND)
     set(BACKEND_LIBRARIES ${BACKEND_LIBRARIES} ${PostgreSQL_LIBRARIES})
+    set(BACKEND_SOURCES_PQ 
+        ${LIB_SOURCE_DIR}/pq/connection_impl.cpp
+        ${LIB_SOURCE_DIR}/pq/transaction_impl.cpp
+        ${LIB_SOURCE_DIR}/pq/statement_impl.cpp
+        ${LIB_SOURCE_DIR}/pq/transaction_statement_impl.cpp
+        ${LIB_SOURCE_DIR}/pq/selector_impl.cpp
+        ${LIB_SOURCE_DIR}/pq/db_row_impl.cpp)
 endif()
 
 if (SQLITE_BACKEND)
     find_package(SQLite3 REQUIRED)
     add_definitions(-DSQLITE_BACKEND)
+    set(BACKEND_SOURCES_SQLITE 
+        ${LIB_SOURCE_DIR}/sqlite/connection_impl.cpp
+        ${LIB_SOURCE_DIR}/sqlite/transaction_impl.cpp
+        ${LIB_SOURCE_DIR}/sqlite/statement_impl.cpp
+        ${LIB_SOURCE_DIR}/sqlite/sqlite3.c)
 endif()
 
 set(CMAKE_CXX_STANDARD 17)
@@ -29,27 +44,22 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
   # using Visual Studio C++
 endif()
 
-set(LIB_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
-set(LIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
-
 set(LIB_PUBLIC_HEADERS
     ${LIB_INCLUDE_DIR}/database.h
     ${LIB_INCLUDE_DIR}/db_row.h
-    ${LIB_INCLUDE_DIR}/connection.h
     ${LIB_INCLUDE_DIR}/statement.h
-    ${LIB_INCLUDE_DIR}/selector.h
-    ${LIB_INCLUDE_DIR}/transaction.h)
+    ${LIB_INCLUDE_DIR}/transaction_statement.h  
+    ${LIB_INCLUDE_DIR}/selector.h)
 
 set(LIB_CPP_SOURCES
+    ${BACKEND_SOURCES_PQ}
+    ${BACKEND_SOURCES_SQLITE}
     ${LIB_SOURCE_DIR}/db_row_impl.cpp
     ${LIB_SOURCE_DIR}/connection_impl.cpp
     ${LIB_SOURCE_DIR}/selector.cpp
     ${LIB_SOURCE_DIR}/statement_impl.cpp
-    ${LIB_SOURCE_DIR}/pq/connection_impl.cpp
-    ${LIB_SOURCE_DIR}/pq/statement_impl.cpp
-    ${LIB_SOURCE_DIR}/pq/statement_base_impl.cpp
-    ${LIB_SOURCE_DIR}/pq/selector_impl.cpp
-    ${LIB_SOURCE_DIR}/pq/db_row_impl.cpp
+    ${LIB_SOURCE_DIR}/transaction.cpp
+    ${LIB_SOURCE_DIR}/transaction_statement_impl.cpp
     ${LIB_SOURCE_DIR}/sqlite/sqlitedb.cpp)
 
 set(LIB_SOURCES ${LIB_PUBLIC_HEADERS} ${LIB_CPP_SOURCES})
