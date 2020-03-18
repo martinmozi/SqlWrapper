@@ -1,5 +1,6 @@
+#include <memory>
 #include "selector_impl.h"
-//#include "db_row_impl.h"
+#include "db_row_impl.h"
 
 namespace SqliteImpl
 {
@@ -11,45 +12,48 @@ namespace SqliteImpl
 
     void Selector::select(std::function<void(const Sql::DbRow & dbRow)> && selectFunction)
     {
-      /*  PGresult* res = statement_.execute();
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        sqlite3_stmt *stmt = statement_.execute();
+        int nFields = sqlite3_column_count(stmt);
+        while (sqlite3_step(stmt) == SQLITE_ROW) 
         {
-            std::string errorStr = PQerrorMessage(conn_);
-            PQclear(res);
-            throw std::runtime_error(errorStr);
-        }
+            std::unique_ptr<SqliteImpl::DbRow> rowData = std::make_unique<SqliteImpl::DbRow>();
+            for (int i = 0; i < nFields; i++)
+            {
+                switch (sqlite3_column_type(stmt, i))
+                {
+                    case SQLITE_INTEGER:
+                        rowData->append(DbImpl::Data((int64_t)sqlite3_column_int64(stmt, i)));
+                        break;
 
-        int rows = PQntuples(res);
-        int nFields = PQnfields(res);
-        if (isSingle_)
-        {
-            if (rows == 0)
-            {
-                PQclear(res);
-                throw std::runtime_error("No data found in select");
-            }
-            else if (rows > 1)
-            {
-                PQclear(res);
-                throw std::runtime_error("Multiply rows for single selection were selected");
-            }
-        }
+                    case SQLITE_FLOAT:
+                        rowData->append(DbImpl::Data(sqlite3_column_double(stmt, i)));
+                        break;
 
-        for (int i = 0; i < rows; i++)
-        {
-            std::unique_ptr<PqImpl::DbRow> rowData = std::make_unique<PqImpl::DbRow>();
-            for (int j = 0; j < nFields; j++)
-            {
-                bool isNull = (PQgetisnull(res, i, j) == 1);
-                if (isNull)
-                    rowData->appendNull();
-                else
-                    rowData->append(std::string(std::string(PQgetvalue(res, i, j))));
+                    case SQLITE_BLOB:
+                        {
+                            int bytes = sqlite3_column_bytes(stmt, i);
+                            auto *pData = (const unsigned char*)sqlite3_column_blob(stmt, i);
+                            rowData->append(DbImpl::Data(std::vector<unsigned char>(pData, pData + bytes)));
+                        }
+                        break;
+
+                    case SQLITE_TEXT:
+                        rowData->append(DbImpl::Data(sqlite3_column_text(stmt, i)));
+                        break;
+
+                    case SQLITE_NULL:
+                        rowData->appendNull();
+                        break;
+
+                    default:
+                        break;
+                }
             }
 
             selectFunction(*rowData.get());
         }
 
-        PQclear(res);*/
+        sqlite3_clear_bindings(stmt);
+        sqlite3_finalize(stmt);
     }
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <string>
+#include "data.h"
 #include "../include/db_row.h"
 
 namespace DbImpl
@@ -9,14 +9,13 @@ namespace DbImpl
 	class DbRow : public Sql::DbRow
 	{
     protected:
-		std::vector<std::string> rowData_;
-		std::vector<bool> nullData_;
+		std::vector<Data> rowData_;
 
 	public:
 		DbRow() = default;
         bool isNull(int index) const override;
-        virtual void value(int index, bool& val) const = 0;
-        virtual void value(int index, std::vector<char>& val) const = 0;
+        void value(int index, bool& val) const override;
+        void value(int index, std::vector<unsigned char>& val) const override;
         void value(int index, int32_t& val) const override;
         void value(int index, int64_t& val) const override;
         void value(int index, double& val) const override;
@@ -26,9 +25,9 @@ namespace DbImpl
         void nvlValue(int index, bool& val, bool valWhenNull) const override;
         void nvlValue(int index, double& val, double valWhenNull) const override;
         void nvlValue(int index, std::string& val, std::string valWhenNull) const override;
-        void nvlValue(int index, std::vector<char>& val, std::vector<char> valWhenNull) const override;
+        void nvlValue(int index, std::vector<unsigned char>& val, std::vector<unsigned char> valWhenNull) const override;
 
-		void append(const std::string & val);
+		void append(Data && val);
 		void appendNull();
 
 	protected:

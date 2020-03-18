@@ -20,7 +20,7 @@ namespace DbImpl
 
     void TransactionStatement::commit()
     {
-        transaction_->begin();
+        transaction_->commit();
     }
 
     void TransactionStatement::rollback()

@@ -1,3 +1,9 @@
 VsWrapper
 Debug
+DebugSqlite
 build
+
+/src/sqlite/sqlite3.c
+/src/sqlite/sqlite3.h
+/src/sqlite/sqlite3ext.h
+/test.db

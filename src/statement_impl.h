@@ -2,49 +2,21 @@
 
 #include <vector>
 #include <string>
+#include "data.h"
 #include "../include/statement.h"
 
 namespace DbImpl
 {
-    enum DataType
-    {
-        Null,
-        Bool,
-        BigInt,
-        Int,
-        Double,
-        String,
-        Blob,
-    };
-
     class Statement : public Sql::Statement
     {
     protected:
-        struct Data
-        {
-            std::string name_;
-            void *value_;
-            DataType type_;
-
-            Data();
-            Data(Data&& d);
-            Data& operator=(Data&& d);
-            Data(const Data&) = delete;
-            Data& operator=(const Data&) = delete;
-            ~Data();
-
-            template<typename T> void setValue(std::string name, const T & value);
-            template<typename T> const T& value() const { return *((T*)value_); }
-        };
-
-    protected:
         std::string query_;
-        std::vector<Data> data_;
+        std::vector<BindData> data_;
 
     protected:
         void replaceBindedParameter(const std::string& bindedName, bool isNull, int& index);
         const char* query() const;
-        const std::vector<Data>& data() const;
+        const std::vector<BindData>& data() const;
 
     public:
         Statement() = default;
@@ -83,14 +55,14 @@ namespace DbImpl
     private:
         void bindNull(const std::string& key)
         {
-            Data data;
+            BindData data;
             data.name_ = key;
             data_.push_back(std::move(data));
         }
 
         template<class T> void bindData(const std::string& key, const T& value)
         {
-            Data data;
+            BindData data;
             data.setValue(key, value);
             data_.push_back(std::move(data));
         }

@@ -4,67 +4,56 @@
 
 namespace DbImpl
 {
-    void DbRow::append(const std::string& val)
+    void DbRow::append(Data&& val)
     {
-        rowData_.push_back(val);
-        nullData_.push_back(bool(false));
+        rowData_.push_back(std::move(val));
     }
 
     void DbRow::appendNull()
     {
-        rowData_.push_back(std::string());
-        nullData_.push_back(bool(true));
+        rowData_.push_back(Data());
     }
 
     bool DbRow::isNull(int index) const
     {
         checkIndex(index);
-        return nullData_.at(index);
+        return (rowData_.at(index).type_ == DataType::Null);
+    }
+
+    void DbRow::value(int index, bool& val) const
+    {
+        checkIndex(index);
+        val = rowData_.at(index).value<bool>();
+    }
+
+    void DbRow::value(int index, std::vector<unsigned char>& val) const
+    {
+        checkIndex(index);
+        val = rowData_.at(index).value<std::vector<unsigned char>>();
     }
 
     void DbRow::value(int index, int32_t& val) const
     {
-        size_t sz = 0;
         checkIndex(index);
-        const std::string& dataStr = rowData_.at(index);
-        val = std::stoi(dataStr, &sz);
-        if (sz != dataStr.size())
-        {
-            std::string errorStr = "Bad conversion of string to int32_t: " + dataStr;
-            throw std::runtime_error(errorStr);
-        }
+        val = rowData_.at(index).value<int32_t>();
     }
 
     void DbRow::value(int index, int64_t& val) const
     {
-        size_t sz = 0;
         checkIndex(index);
-        const std::string& dataStr = rowData_.at(index);
-        val = std::stoll(dataStr, &sz);
-        if (sz != dataStr.size())
-        {
-            std::string errorStr = "Bad conversion of string to int64_t: " + dataStr;
-            throw std::runtime_error(errorStr);
-        }
+        val = rowData_.at(index).value<int64_t>();
     }
 
     void DbRow::value(int index, double& val) const
     {
-        size_t sz = 0;
         checkIndex(index);
-        const std::string& dataStr = rowData_.at(index);
-        val = std::stod(dataStr, &sz);
-        if (sz != dataStr.size())
-        {
-            std::string errorStr = "Bad conversion of string to int64_t: " + dataStr;
-            throw std::runtime_error(errorStr);
-        }
+        val = rowData_.at(index).value<double>();
     }
 
     void DbRow::value(int index, std::string& val) const
     {
         checkIndex(index);
-        val = rowData_.at(index);
+        val = rowData_.at(index).value<std::string>();
     }
 
     void DbRow::nvlValue(int index, int32_t& val, int32_t valWhenNull) const
@@ -92,14 +81,14 @@ namespace DbImpl
         _value(index, val, valWhenNull);
     }
 
-    void DbRow::nvlValue(int index, std::vector<char>& val, std::vector<char> valWhenNull) const
+    void DbRow::nvlValue(int index, std::vector<unsigned char>& val, std::vector<unsigned char> valWhenNull) const
     {
         _value(index, val, valWhenNull);
     }
 
     void DbRow::checkIndex(int index) const
     {
-        if (index > (int)rowData_.size() || index > (int)nullData_.size())
+        if (index > (int)rowData_.size())
             throw std::runtime_error("Selector index is out of the row size");
     }
 }

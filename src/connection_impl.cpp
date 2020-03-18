@@ -8,6 +8,8 @@
 
 #ifdef SQLITE_BACKEND
 #include "sqlite/connection_impl.h"
+#include "sqlite/transaction_statement_impl.h"
+#include "sqlite/selector_impl.h"
 #endif
 
 namespace DbImpl
@@ -28,21 +30,21 @@ namespace DbImpl
         switch (dbType_)
         {
         case Sql::DbType::Postgres:
-        {
-            PqImpl::Connection* pConnection = dynamic_cast<PqImpl::Connection*>(this);
-            return std::make_unique<PqImpl::TransactionStatement>(pConnection->connection());
-        }
-        break;
+            {
+                PqImpl::Connection* pConnection = dynamic_cast<PqImpl::Connection*>(this);
+                return std::make_unique<PqImpl::TransactionStatement>(pConnection->connection());
+            }
+            break;
 
         case Sql::DbType::Sqlite:
-        {
-            //SqliteImpl::Connection* pConnection = dynamic_cast<SqliteImpl::Connection*>(this);
-            //return std::make_unique<SqliteImpl::TransactionStatement>(pConnection->connection());
-        }
+            {
+                SqliteImpl::Connection* pConnection = dynamic_cast<SqliteImpl::Connection*>(this);
+                return std::make_unique<SqliteImpl::TransactionStatement>(pConnection->connection());
+            }
             break;
 
         default:
-            break;
+            throw std::runtime_error("Unsupported database engine");
         }
 
         return nullptr;
@@ -60,10 +62,10 @@ namespace DbImpl
         break;
 
         case Sql::DbType::Sqlite:
-            /*{
+            {
                 SqliteImpl::Connection* pConnection = dynamic_cast<SqliteImpl::Connection*>(this);
                 return std::make_unique<SqliteImpl::Selector>(pConnection->connection(), false);
-            }*/
+            }
         break;
 
         default:

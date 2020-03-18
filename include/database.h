@@ -17,7 +17,7 @@ namespace Sql
     {
     public:
         virtual ~Connection() = default;
-        virtual std::unique_ptr<TransactionStatement> createStatement(/*todo default start transaction to true*/) = 0;
+        virtual std::unique_ptr<TransactionStatement> createStatement() = 0;
         virtual std::unique_ptr<Selector> createSelector() = 0;
     };
 

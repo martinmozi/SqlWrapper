@@ -13,15 +13,16 @@ int main(int argc, char* argv[])
         auto connection = Sql::createConnection(dbType, connectionString);
         auto selector = connection->createSelector();
 
-        selector->prepare("SELECT id, name from countries WHERE numcode > :numcode AND iso3 = :iso3");
-        selector->bind("numcode", 24);
+        selector->prepare("SELECT id, name, strvalue from countries WHERE numcode = :numcode OR iso3 = :iso3");
+        selector->bind("numcode", 16);
         selector->bind("iso3", "ATG");
         selector->select([](const Sql::DbRow& dbRow)
         {
             int64_t id;
-            std::string name;
+            std::string name, strvalue;
             dbRow.value(0, id);
             dbRow.value(1, name);
+            dbRow.value(2, strvalue);
             std::cout << id << name << std::flush;
         });
     }

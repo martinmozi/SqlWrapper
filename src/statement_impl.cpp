@@ -3,120 +3,12 @@
 
 namespace DbImpl
 {
-    Statement::Data::Data()
-    :   value_(nullptr),
-        type_(DataType::Null)
-    {
-    }
-
-    Statement::Data::Data(Data&& d)
-    :   name_(d.name_),
-        value_(d.value_),
-        type_(d.type_)
-    {
-        d.name_ = "";
-        d.value_ = nullptr;
-        d.type_ = DataType::Null;
-    }
-
-    Statement::Data& Statement::Data::operator=(Data&& d)
-    {
-        name_ = d.name_;
-        value_ = d.value_;
-        type_ = d.type_;
-        d.name_ = "";
-        d.value_ = nullptr;
-        d.type_ = DataType::Null;
-        return *this;
-    }
-
-    Statement::Data::~Data()
-    {
-        switch (type_)
-        {
-            case Null:
-            break;
-
-            case Bool:
-                delete ((bool*)value_);
-                break;
-
-            case BigInt:
-                delete ((int64_t*)value_);
-                break;
-
-            case Int:
-                delete ((int32_t*)value_);
-                break;
-
-            case Double:
-                delete ((double*)value_);
-                break;
-
-            case String:
-                delete ((std::string*)value_);
-                break;
-
-            case Blob:
-                delete ((std::vector<unsigned char>*)value_);
-                break;
-
-            default:
-            break;
-        }
-    }
-
-    template<> void Statement::Data::setValue(std::string name, const bool& value)
-    {
-        value_ = new bool(value);
-        type_ = DataType::Bool;
-        name_ = name;
-    }
-
-    template<> void Statement::Data::setValue(std::string name, const int32_t& value)
-    {
-        value_ = new int32_t(value);
-        type_ = DataType::Int;
-        name_ = name;
-    }
-
-    template<> void Statement::Data::setValue(std::string name, const int64_t&  value)
-    {
-        value_ = new int64_t(value);
-        type_ = DataType::BigInt;
-        name_ = name;
-    }
-
-    template<> void Statement::Data::setValue(std::string name, const double& value)
-    {
-        value_ = new double(value);
-        type_ = DataType::Double;
-        name_ = name;
-    }
-
-    template<> void Statement::Data::setValue(std::string name, const std::string& value)
-    {
-        value_ = new std::string(value);
-        type_ = DataType::String;
-        name_ = name;
-    }
-
-    template<> void Statement::Data::setValue(std::string name, const std::vector<unsigned char>& value)
-    {
-        value_ = new std::vector<unsigned char>(value);
-        type_ = DataType::Blob;
-        name_ = name;
-    }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     const char* Statement::query() const
     {
         return query_.c_str();
     }
 
-    const std::vector<Statement::Data>& Statement::data() const
+    const std::vector<BindData>& Statement::data() const
     {
         return data_;
     }

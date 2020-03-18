@@ -22,6 +22,7 @@ namespace PqImpl
 
         int rows = PQntuples(res);
         int nFields = PQnfields(res);
+
         if (isSingle_)
         {
             if (rows == 0)
@@ -41,11 +42,10 @@ namespace PqImpl
             std::unique_ptr<PqImpl::DbRow> rowData = std::make_unique<PqImpl::DbRow>();
             for (int j = 0; j < nFields; j++)
             {
-                bool isNull = (PQgetisnull(res, i, j) == 1);
-                if (isNull)
+                if (PQgetisnull(res, i, j) == 1)
                     rowData->appendNull();
                 else
-                    rowData->append(std::string(std::string(PQgetvalue(res, i, j))));
+                    rowData->append(std::string(PQgetvalue(res, i, j)));
             }
 
             selectFunction(*rowData.get());

@@ -32,7 +32,9 @@ if (SQLITE_BACKEND)
         ${LIB_SOURCE_DIR}/sqlite/connection_impl.cpp
         ${LIB_SOURCE_DIR}/sqlite/transaction_impl.cpp
         ${LIB_SOURCE_DIR}/sqlite/statement_impl.cpp
+        ${LIB_SOURCE_DIR}/sqlite/transaction_statement_impl.cpp
         ${LIB_SOURCE_DIR}/sqlite/selector_impl.cpp
+        ${LIB_SOURCE_DIR}/sqlite/db_row_impl.cpp
         ${LIB_SOURCE_DIR}/sqlite/sqlite3.c)
 endif()
 
@@ -55,6 +57,7 @@ set(LIB_PUBLIC_HEADERS
 set(LIB_CPP_SOURCES
     ${BACKEND_SOURCES_PQ}
     ${BACKEND_SOURCES_SQLITE}
+    ${LIB_SOURCE_DIR}/data.cpp
     ${LIB_SOURCE_DIR}/db_row_impl.cpp
     ${LIB_SOURCE_DIR}/connection_impl.cpp
     ${LIB_SOURCE_DIR}/selector.cpp

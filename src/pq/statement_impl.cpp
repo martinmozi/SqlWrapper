@@ -21,11 +21,9 @@ namespace
 
     template <class T> void appendBinaryPqBind(T value, std::vector<char*>& values, std::vector<int>& lengths, std::vector<int>& binaries)
     {
-        value = swapEndian<T>(value);
         char* valueStr = new char[sizeof(T)];
-        T* pTemp = (T*)valueStr;
-        *pTemp = value;
-
+        *((T*)valueStr) = swapEndian<T>(value);
+  
         values.push_back(valueStr);
         lengths.push_back(int(sizeof(T)));
         binaries.push_back(int(1));
@@ -51,16 +49,15 @@ namespace PqImpl
 
     PGresult* Statement::execute()
     {
-        bool bError = false;
         std::vector<char*> values;
         std::vector<int> lengths, binaries;
-        const std::vector<DbImpl::Statement::Data>& data = DbImpl::Statement::data();
+        const std::vector<DbImpl::BindData>& data = DbImpl::Statement::data();
 
         int index = 1;
-        for (const DbImpl::Statement::Data& _data : data)
+        for (const DbImpl::BindData& _data : data)
             replaceBindedParameter(_data.name_, _data.type_ == DbImpl::DataType::Null, index);
 
-        for (const DbImpl::Statement::Data& _data : data)
+        for (const DbImpl::BindData& _data : data)
         {
             switch (_data.type_)
             {
@@ -106,9 +103,7 @@ namespace PqImpl
             break;
 
             default:
-                bError = true;
-                break;
-
+                throw std::runtime_error("Unsupported binding parameter type");
             }
         }
 
@@ -134,9 +129,6 @@ namespace PqImpl
                     delete[]pData;
             }
         }
-
-        if (bError)
-            throw std::runtime_error("Unsupported binding parameter type");
 
         return res;
     }
