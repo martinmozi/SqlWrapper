@@ -12,6 +12,7 @@ namespace DbImpl
         virtual ~Connection();
         std::unique_ptr<Sql::TransactionStatement> createStatement() override;
         std::unique_ptr<Sql::Selector> createSelector() override;
+        std::unique_ptr<Sql::SingleSelector> createSingleSelector() override;
 
         virtual void connect() = 0;
         virtual void disconnect() {};

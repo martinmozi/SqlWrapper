@@ -1,12 +1,13 @@
 #-------------------------------
 cmake_minimum_required(VERSION 3.8)
-project(SqlWrapper VERSION 1.0.0 LANGUAGES CXX)
+project(SqlWrapper VERSION 1.0.0 )
 
 option(SQLITE_BACKEND "build with sqlite support" ON)
 option(POSTGRESQL_BACKEND "build with PostgreSql support" ON)
 
 include(GNUInstallDirs) # Installation directories for `install` command and pkgconfig file
 find_package(PkgConfig)
+find_package(Threads REQUIRED)
 
 set(LIB_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
 set(LIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
@@ -63,8 +64,7 @@ set(LIB_CPP_SOURCES
     ${LIB_SOURCE_DIR}/selector.cpp
     ${LIB_SOURCE_DIR}/statement_impl.cpp
     ${LIB_SOURCE_DIR}/transaction.cpp
-    ${LIB_SOURCE_DIR}/transaction_statement_impl.cpp
-    ${LIB_SOURCE_DIR}/sqlite/sqlitedb.cpp)
+    ${LIB_SOURCE_DIR}/transaction_statement_impl.cpp)
 
 set(LIB_SOURCES ${LIB_PUBLIC_HEADERS} ${LIB_CPP_SOURCES})
 add_library(sql-wrapper-objects OBJECT ${LIB_SOURCES})
@@ -72,8 +72,8 @@ set_target_properties(sql-wrapper-objects PROPERTIES POSITION_INDEPENDENT_CODE O
 
 add_library(sql-wrapper SHARED $<TARGET_OBJECTS:sql-wrapper-objects>)
 add_library(sql-wrapper-static STATIC $<TARGET_OBJECTS:sql-wrapper-objects>)
-target_link_libraries(sql-wrapper ${BACKEND_LIBRARIES})
-target_link_libraries(sql-wrapper-static ${BACKEND_LIBRARIES})
+target_link_libraries(sql-wrapper ${BACKEND_LIBRARIES} Threads::Threads ${CMAKE_DL_LIBS})
+target_link_libraries(sql-wrapper-static ${BACKEND_LIBRARIES} Threads::Threads ${CMAKE_DL_LIBS})
 
 set_target_properties(sql-wrapper
     PROPERTIES
@@ -88,7 +88,7 @@ install(TARGETS sql-wrapper
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT static_libraries
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${LIB_INCLUDE_SUBDIR} COMPONENT dev)
 
-option(ENABLE_EXAMPLES "Build and install examples (default ON)" OFF)
+option(ENABLE_EXAMPLES "Build and install examples (default ON)" ON)
 if(ENABLE_EXAMPLES)
     add_subdirectory("${CMAKE_SOURCE_DIR}/examples")
 endif()

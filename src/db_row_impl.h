@@ -4,6 +4,7 @@
 #include "data.h"
 #include "../include/db_row.h"
 
+// todo return methods
 namespace DbImpl
 {
 	class DbRow : public Sql::DbRow

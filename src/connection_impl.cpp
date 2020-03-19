@@ -29,19 +29,22 @@ namespace DbImpl
     {
         switch (dbType_)
         {
+#ifdef PQ_BACKEND
         case Sql::DbType::Postgres:
             {
                 PqImpl::Connection* pConnection = dynamic_cast<PqImpl::Connection*>(this);
                 return std::make_unique<PqImpl::TransactionStatement>(pConnection->connection());
             }
             break;
-
+#endif
+#ifdef SQLITE_BACKEND
         case Sql::DbType::Sqlite:
             {
                 SqliteImpl::Connection* pConnection = dynamic_cast<SqliteImpl::Connection*>(this);
                 return std::make_unique<SqliteImpl::TransactionStatement>(pConnection->connection());
             }
             break;
+#endif
 
         default:
             throw std::runtime_error("Unsupported database engine");
@@ -54,19 +57,23 @@ namespace DbImpl
     {
         switch (dbType_)
         {
+#ifdef PQ_BACKEND
         case Sql::DbType::Postgres:
         {
             PqImpl::Connection* pConnection = dynamic_cast<PqImpl::Connection*>(this);
-            return std::make_unique<PqImpl::Selector>(pConnection->connection(), false);
+            return std::make_unique<PqImpl::Selector>(pConnection->connection());
         }
         break;
+#endif
 
+#ifdef SQLITE_BACKEND
         case Sql::DbType::Sqlite:
             {
                 SqliteImpl::Connection* pConnection = dynamic_cast<SqliteImpl::Connection*>(this);
-                return std::make_unique<SqliteImpl::Selector>(pConnection->connection(), false);
+                return std::make_unique<SqliteImpl::Selector>(pConnection->connection());
             }
         break;
+#endif
 
         default:
             break;
@@ -75,19 +82,31 @@ namespace DbImpl
         return nullptr;
     }
 
-    std::unique_ptr<Sql::Connection> Connection::createConnection(Sql::DbType dbType, const std::string& connectionStr)
+    std::unique_ptr<Sql::SingleSelector> Connection::createSingleSelector()
     {
-            switch (dbType)
-            {
-            case Sql::DbType::Postgres:
-                return std::make_unique<PqImpl::Connection>(connectionStr);
+        switch (dbType_)
+        {
+#ifdef PQ_BACKEND
+        case Sql::DbType::Postgres:
+        {
+            PqImpl::Connection* pConnection = dynamic_cast<PqImpl::Connection*>(this);
+            return std::make_unique<PqImpl::SingleSelector>(pConnection->connection());
+        }
+        break;
+#endif
 
-            case Sql::DbType::Sqlite:
-                break;
+#ifdef SQLITE_BACKEND
+        case Sql::DbType::Sqlite:
+        {
+            SqliteImpl::Connection* pConnection = dynamic_cast<SqliteImpl::Connection*>(this);
+            return std::make_unique<SqliteImpl::SingleSelector>(pConnection->connection());
+        }
+        break;
+#endif
 
-            default:
-                throw std::runtime_error("Unsupported database connection");
-            }
+        default:
+            break;
+        }
 
         return nullptr;
     }
@@ -100,13 +119,16 @@ namespace Sql
         std::unique_ptr<DbImpl::Connection> connection;
         switch (dbType)
         {
+#ifdef PQ_BACKEND
         case DbType::Postgres:
             connection = std::make_unique<PqImpl::Connection>(connectionStr);
             break;
-
+#endif
+#ifdef SQLITE_BACKEND
         case DbType::Sqlite:
             connection = std::make_unique<SqliteImpl::Connection>(connectionStr);
             break;
+#endif
 
         default:
             break;
