@@ -23,7 +23,7 @@ namespace PqImpl
         bool isSingle_;
     };
 
-    class Selector : public SelectorBase, public virtual Sql::Selector
+    class Selector : public SelectorBase, public Sql::Selector
     {
     public:
         Selector(PGconn* conn);
@@ -36,7 +36,7 @@ namespace PqImpl
         std::function<void(const Sql::DbRow & dbRow)> selectFunction_;
     };
 
-    class SingleSelector : public SelectorBase, public virtual Sql::SingleSelector
+    class SingleSelector : public SelectorBase, public Sql::SingleSelector
     {
     public:
         SingleSelector(PGconn* conn);

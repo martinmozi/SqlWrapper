@@ -18,7 +18,7 @@ namespace SqliteImpl
         SqliteImpl::Statement statement_;
     };
     
-    class Selector : public SelectorBase, public virtual Sql::Selector
+    class Selector : public SelectorBase, public Sql::Selector
     {
     public:
         Selector(sqlite3* conn);
@@ -31,7 +31,7 @@ namespace SqliteImpl
         std::function<void(const Sql::DbRow & dbRow)> selectFunction_;
     };
 
-    class SingleSelector : public SelectorBase, public virtual Sql::SingleSelector
+    class SingleSelector : public SelectorBase, public Sql::SingleSelector
     {
     public:
         SingleSelector(sqlite3* conn);
