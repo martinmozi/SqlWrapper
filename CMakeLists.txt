@@ -1,6 +1,6 @@
 #-------------------------------
 cmake_minimum_required(VERSION 3.8)
-project(SqlWrapper VERSION 1.0.0 )
+project(SqlWrapper VERSION 1.0.0 LANGUAGES CXX)
 
 option(SQLITE_BACKEND "build with sqlite support" ON)
 option(POSTGRESQL_BACKEND "build with PostgreSql support" ON)
@@ -35,8 +35,7 @@ if (SQLITE_BACKEND)
         ${LIB_SOURCE_DIR}/sqlite/statement_impl.cpp
         ${LIB_SOURCE_DIR}/sqlite/transaction_statement_impl.cpp
         ${LIB_SOURCE_DIR}/sqlite/selector_impl.cpp
-        ${LIB_SOURCE_DIR}/sqlite/db_row_impl.cpp
-        ${LIB_SOURCE_DIR}/sqlite/sqlite3.c)
+        ${LIB_SOURCE_DIR}/sqlite/db_row_impl.cpp)
 endif()
 
 set(CMAKE_CXX_STANDARD 14)
