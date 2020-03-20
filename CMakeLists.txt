@@ -1,10 +1,10 @@
 function(checkSqlite)
     if (SQLITE3_LIBRARIES AND SQLITE3_INCLUDE_DIRS)
         set(SQLITE3_FOUND TRUE)
-    else (SQLITE3_LIBRARIES AND SQLITE3_INCLUDE_DIRS)
+    else ()
         find_package(PkgConfig)
         if (PKG_CONFIG_FOUND)
-            pkg_check_modules(_SQLITE3 REQUIRED sqlite3)
+            pkg_check_modules(SQLITE3 REQUIRED sqlite3)
         else (PKG_CONFIG_FOUND)
             find_package(SQLite3 REQUIRED)
         endif (PKG_CONFIG_FOUND)
@@ -82,6 +82,7 @@ set_target_properties(sql-wrapper-objects PROPERTIES POSITION_INDEPENDENT_CODE O
 
 add_library(sql-wrapper SHARED $<TARGET_OBJECTS:sql-wrapper-objects>)
 add_library(sql-wrapper-static STATIC $<TARGET_OBJECTS:sql-wrapper-objects>)
+
 target_link_libraries(sql-wrapper ${BACKEND_LIBRARIES} Threads::Threads ${CMAKE_DL_LIBS})
 target_link_libraries(sql-wrapper-static ${BACKEND_LIBRARIES} Threads::Threads ${CMAKE_DL_LIBS})
 
@@ -106,11 +107,12 @@ endif()
 if(WIN32 AND NOT CYGWIN)
     set(LIB_CONFIG_INSTALL_DIR CMake)
 else()
-    set(LIB_CONFIG_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/SqlWrapper)
+    set(LIB_CONFIG_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/sql-wrapper)
 endif()
 
 include(CMakePackageConfigHelpers)
 
+set(LINK_LIBRARIES "sql-wrapper")
 configure_file(SqlWrapperConfig.cmake.in SqlWrapperConfig.cmake @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/SqlWrapperConfig.cmake DESTINATION ${LIB_CONFIG_INSTALL_DIR} COMPONENT dev)
 
