@@ -1,4 +1,16 @@
-#-------------------------------
+function(checkSqlite)
+    if (SQLITE3_LIBRARIES AND SQLITE3_INCLUDE_DIRS)
+        set(SQLITE3_FOUND TRUE)
+    else (SQLITE3_LIBRARIES AND SQLITE3_INCLUDE_DIRS)
+        find_package(PkgConfig)
+        if (PKG_CONFIG_FOUND)
+            pkg_check_modules(_SQLITE3 REQUIRED sqlite3)
+        else (PKG_CONFIG_FOUND)
+            find_package(SQLite3 REQUIRED)
+        endif (PKG_CONFIG_FOUND)
+    endif()
+endfunction()
+
 cmake_minimum_required(VERSION 3.8)
 project(SqlWrapper VERSION 1.0.0 LANGUAGES CXX)
 
@@ -6,7 +18,6 @@ option(SQLITE_BACKEND "build with sqlite support" ON)
 option(POSTGRESQL_BACKEND "build with PostgreSql support" ON)
 
 include(GNUInstallDirs) # Installation directories for `install` command and pkgconfig file
-find_package(PkgConfig)
 find_package(Threads REQUIRED)
 
 set(LIB_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
@@ -27,7 +38,7 @@ if (POSTGRESQL_BACKEND)
 endif()
 
 if (SQLITE_BACKEND)
-    find_package(SQLite3 REQUIRED)
+    checkSqlite()
     add_definitions(-DSQLITE_BACKEND)
     set(BACKEND_SOURCES_SQLITE 
         ${LIB_SOURCE_DIR}/sqlite/connection_impl.cpp
@@ -85,13 +96,12 @@ install(TARGETS sql-wrapper
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT libraries # This is for Windows
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT libraries
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT static_libraries
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${LIB_INCLUDE_SUBDIR} COMPONENT dev)
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sql-wrapper COMPONENT dev)
 
 option(ENABLE_EXAMPLES "Build and install examples (default ON)" ON)
 if(ENABLE_EXAMPLES)
     add_subdirectory("${CMAKE_SOURCE_DIR}/examples")
 endif()
-
 
 if(WIN32 AND NOT CYGWIN)
     set(LIB_CONFIG_INSTALL_DIR CMake)
