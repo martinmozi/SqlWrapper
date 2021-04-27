@@ -16,6 +16,7 @@ project(SqlWrapper VERSION 1.0.0 LANGUAGES CXX)
 
 option(SQLITE_BACKEND "build with sqlite support" ON)
 option(POSTGRESQL_BACKEND "build with PostgreSql support" ON)
+option(ORACLE_BACKEND "build with Oracle support" ON)
 
 include(GNUInstallDirs) # Installation directories for `install` command and pkgconfig file
 find_package(Threads REQUIRED)
@@ -49,6 +50,20 @@ if (SQLITE_BACKEND)
         ${LIB_SOURCE_DIR}/sqlite/db_row_impl.cpp)
 endif()
 
+if (ORACLE_BACKEND)
+    include_directories("/home/CPPTST/arpc073824/local/include/")
+    link_directories("/home/CPPTST/arpc073824/local/lib/")
+    set(BACKEND_LIBRARIES ${BACKEND_LIBRARIES} "odpic")
+    add_definitions(-DORACLE_BACKEND)
+    set(BACKEND_SOURCES_ORACLE 
+        ${LIB_SOURCE_DIR}/oracle/connection_impl.cpp
+        ${LIB_SOURCE_DIR}/oracle/transaction_impl.cpp
+        ${LIB_SOURCE_DIR}/oracle/statement_impl.cpp
+        ${LIB_SOURCE_DIR}/oracle/transaction_statement_impl.cpp
+        ${LIB_SOURCE_DIR}/oracle/selector_impl.cpp
+        ${LIB_SOURCE_DIR}/oracle/db_row_impl.cpp)
+endif()
+
 set(CMAKE_CXX_STANDARD 14)
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     add_compile_options(-W -Wextra -Wall -Wno-gnu -pedantic)
@@ -68,6 +83,7 @@ set(LIB_PUBLIC_HEADERS
 set(LIB_CPP_SOURCES
     ${BACKEND_SOURCES_PQ}
     ${BACKEND_SOURCES_SQLITE}
+    ${BACKEND_SOURCES_ORACLE}
     ${LIB_SOURCE_DIR}/data.cpp
     ${LIB_SOURCE_DIR}/db_row_impl.cpp
     ${LIB_SOURCE_DIR}/connection_impl.cpp

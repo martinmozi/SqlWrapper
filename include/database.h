@@ -11,6 +11,7 @@ namespace Sql
     {
         Postgres,
         Sqlite,
+        Oracle
     };
 
     class Connection

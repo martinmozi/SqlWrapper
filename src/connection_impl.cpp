@@ -12,6 +12,12 @@
 #include "sqlite/selector_impl.h"
 #endif
 
+#ifdef ORACLE_BACKEND
+#include "oracle/connection_impl.h"
+#include "oracle/transaction_statement_impl.h"
+#include "oracle/selector_impl.h"
+#endif
+
 namespace DbImpl
 {
     Connection::Connection(Sql::DbType dbType, const std::string & connectionStr)
@@ -45,6 +51,14 @@ namespace DbImpl
             }
             break;
 #endif
+#ifdef ORACLE_BACKEND
+        case Sql::DbType::Oracle:
+        {
+            OracleImpl::Connection* pConnection = dynamic_cast<OracleImpl::Connection*>(this);
+            return std::make_unique<OracleImpl::TransactionStatement>(pConnection->connection());
+        }
+        break;
+#endif
 
         default:
             throw std::runtime_error("Unsupported database engine");
@@ -72,6 +86,14 @@ namespace DbImpl
                 SqliteImpl::Connection* pConnection = dynamic_cast<SqliteImpl::Connection*>(this);
                 return std::make_unique<SqliteImpl::Selector>(pConnection->connection());
             }
+        break;
+#endif
+#ifdef ORACLE_BACKEND
+        case Sql::DbType::Oracle:
+        {
+            OracleImpl::Connection* pConnection = dynamic_cast<OracleImpl::Connection*>(this);
+            return std::make_unique<OracleImpl::Selector>(pConnection->connection());
+        }
         break;
 #endif
 
@@ -104,6 +126,15 @@ namespace DbImpl
         break;
 #endif
 
+#ifdef ORACLE_BACKEND
+        case Sql::DbType::Oracle:
+        {
+            OracleImpl::Connection* pConnection = dynamic_cast<OracleImpl::Connection*>(this);
+            return std::make_unique<OracleImpl::SingleSelector>(pConnection->connection());
+        }
+        break;
+#endif
+
         default:
             break;
         }
@@ -127,6 +158,11 @@ namespace Sql
 #ifdef SQLITE_BACKEND
         case DbType::Sqlite:
             connection = std::make_unique<SqliteImpl::Connection>(connectionStr);
+            break;
+#endif
+#ifdef ORACLE_BACKEND
+        case DbType::Oracle:
+            connection = std::make_unique<OracleImpl::Connection>(connectionStr);
             break;
 #endif
 
