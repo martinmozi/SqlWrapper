@@ -51,8 +51,12 @@ if (SQLITE_BACKEND)
 endif()
 
 if (ORACLE_BACKEND)
-    include_directories("/home/CPPTST/arpc073824/local/include/")
-    link_directories("/home/CPPTST/arpc073824/local/lib/")
+    if(NOT DEFINED ODPI_INSTALL_ROOT)
+        set(ODPI_INSTALL_ROOT "/usr")
+    endif()
+
+    include_directories("${ODPI_INSTALL_ROOT}/include/")
+    link_directories("${ODPI_INSTALL_ROOT}/lib/")
     set(BACKEND_LIBRARIES ${BACKEND_LIBRARIES} "odpic")
     add_definitions(-DORACLE_BACKEND)
     set(BACKEND_SOURCES_ORACLE 
