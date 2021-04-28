@@ -1,5 +1,5 @@
 # SqlWrapper
-Database wrapper for generic access sqlite and postgresql databases
+Database wrapper for generic access sqlite, postgresql and oracle databases
 
 # prerequisities Linux
 cmake
