@@ -1,6 +1,7 @@
 #include "statement_impl.h"
 #include <stdexcept>
 #include "error_impl.h"
+#include <string.h>
 
 namespace OracleImpl
 {
@@ -15,48 +16,65 @@ namespace OracleImpl
         if (dpiConn_prepareStmt(conn_, 0, query_.c_str(), query_.size(), NULL, 0, &stmt) < 0)
             throw std::runtime_error(oracleErrorMsg());
 
-        /*const std::vector<DbImpl::BindData>& data = DbImpl::Statement::data();
-        if (sqlite3_prepare_v2(conn_, query_.c_str(), -1, &stmt, 0) != SQLITE_OK)
-            throw std::runtime_error(sqlite3_errmsg(conn_));
-
+        const std::vector<DbImpl::BindData>& data = DbImpl::Statement::data();
         try
         {
+            dpiData bindValue;
             for (const DbImpl::BindData& _data : data)
             {
-                std::string paramName = std::string(":") + _data.name_;
+                bindValue.isNull = 0;
                 switch (_data.type_)
                 {
                 case DbImpl::DataType::Null:
-                    sqlite3_bind_null(stmt, sqlite3_bind_parameter_index(stmt, paramName.c_str()));
+                    bindValue.isNull = 1;
+                    if (dpiStmt_bindValueByName(stmt, _data.name_.c_str(), _data.name_.size(), DPI_NATIVE_TYPE_NULL, &bindValue) < 0)
+                        throw std::runtime_error(oracleErrorMsg());
                     break;
 
                 case DbImpl::DataType::Bool:
-                    sqlite3_bind_int(stmt, sqlite3_bind_parameter_index(stmt, paramName.c_str()), (_data.value<bool>()) ? 1 : 0);
+                    bindValue.value.asBoolean = (_data.value<bool>()) ? 1 : 0;
+                    if (dpiStmt_bindValueByName(stmt, _data.name_.c_str(), _data.name_.size(), DPI_NATIVE_TYPE_BOOLEAN, &bindValue) < 0)
+                        throw std::runtime_error(oracleErrorMsg());
+
                     break;
 
                 case DbImpl::DataType::Int:
-                    sqlite3_bind_int(stmt, sqlite3_bind_parameter_index(stmt, paramName.c_str()), _data.value<int32_t>());
+                    bindValue.value.asInt64 = _data.value<int32_t>();
+                    if (dpiStmt_bindValueByName(stmt, _data.name_.c_str(), _data.name_.size(), DPI_NATIVE_TYPE_INT64, &bindValue) < 0)
+                        throw std::runtime_error(oracleErrorMsg());
                     break;
 
                 case DbImpl::DataType::BigInt:
-                    sqlite3_bind_int64(stmt, sqlite3_bind_parameter_index(stmt, paramName.c_str()), _data.value<int64_t>());
+                    bindValue.value.asInt64 = _data.value<int64_t>();
+                    if (dpiStmt_bindValueByName(stmt, _data.name_.c_str(), _data.name_.size(), DPI_NATIVE_TYPE_INT64, &bindValue) < 0)
+                        throw std::runtime_error(oracleErrorMsg());
                     break;
 
                 case DbImpl::DataType::Double:
-                    sqlite3_bind_double(stmt, sqlite3_bind_parameter_index(stmt, paramName.c_str()), _data.value<double>());
+                    bindValue.value.asInt64 = _data.value<double>();
+                    if (dpiStmt_bindValueByName(stmt, _data.name_.c_str(), _data.name_.size(), DPI_NATIVE_TYPE_DOUBLE, &bindValue) < 0)
+                        throw std::runtime_error(oracleErrorMsg());
                     break;
 
                 case DbImpl::DataType::String:
                     {
                         const auto& d = _data.value<std::string>();
-                        sqlite3_bind_text(stmt, sqlite3_bind_parameter_index(stmt, paramName.c_str()), d.c_str(), d.size(), SQLITE_TRANSIENT);
+                        bindValue.value.asBytes.encoding = "UTF-8";
+                        bindValue.value.asBytes.length = d.size();
+                        bindValue.value.asBytes.ptr = (char*)d.data();
+                        if (dpiStmt_bindValueByName(stmt, _data.name_.c_str(), _data.name_.size(), DPI_NATIVE_TYPE_BYTES, &bindValue) < 0)
+                            throw std::runtime_error(oracleErrorMsg());
                     }
                     break;
 
                 case DbImpl::DataType::Blob:
                     {
                         const auto & d = _data.value<std::vector<unsigned char>>();
-                        sqlite3_bind_blob(stmt, sqlite3_bind_parameter_index(stmt, paramName.c_str()), d.data(), d.size(), SQLITE_TRANSIENT);
+                        bindValue.value.asBytes.ptr = (char*)d.data();
+                        bindValue.value.asBytes.length = d.size();
+                        bindValue.value.asBytes.encoding = "UTF-8";
+                        if (dpiStmt_bindValueByName(stmt, _data.name_.c_str(), _data.name_.size(), DPI_NATIVE_TYPE_LOB, &bindValue) < 0)
+                            throw std::runtime_error(oracleErrorMsg());
                     }
                     break;
 
@@ -67,10 +85,9 @@ namespace OracleImpl
         }
         catch (std::exception & ex)
         {
-            sqlite3_clear_bindings(stmt);
-            sqlite3_reset(stmt);
+            dpiStmt_release(stmt);
             throw std::runtime_error(ex.what());
-        }*/
+        }
 
         return stmt;
     }

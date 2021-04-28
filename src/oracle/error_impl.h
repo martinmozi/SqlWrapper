@@ -1,7 +1,7 @@
 namespace OracleImpl
 {
     extern dpiContext* gDpiContext;
-    extern dpiErrorInfo gErrorInfo;;
+    extern dpiErrorInfo gErrorInfo;
     inline std::string oracleErrorMsg()
     {
         if (gDpiContext)

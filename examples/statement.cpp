@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
         statement->bind("phonecode", 1028);
         statement->exec();
 
-       statement->prepare("INSERT INTO countries(id, iso, name, strvalue, iso3, numcode, phonecode) VALUES(:id, :iso, :name, :strvalue, :iso3, :numcode, :phonecode)");
+        statement->prepare("INSERT INTO countries(id, iso, name, strvalue, iso3, numcode, phonecode) VALUES(:id, :iso, :name, :strvalue, :iso3, :numcode, :phonecode)");
         statement->bind("id", (int64_t)1206);
         statement->bind("iso", "isoX");
         statement->bind("name", "nameX");

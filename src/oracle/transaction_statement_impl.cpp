@@ -1,5 +1,6 @@
 #include "transaction_statement_impl.h"
 #include "transaction_impl.h"
+#include "error_impl.h"
 
 namespace OracleImpl
 {
@@ -12,14 +13,14 @@ namespace OracleImpl
 
     void TransactionStatement::exec()
     {
-        /*std::string errorMessage;
+        std::string errorMessage;
         dpiStmt* stmt = statement_.execute();
-        if (sqlite3_step(stmt) != SQLITE_DONE)
-            errorMessage = sqlite3_errmsg(conn_);
-
-        sqlite3_clear_bindings(stmt);
-        sqlite3_finalize(stmt);
-        if (!errorMessage.empty())
-            throw std::runtime_error(errorMessage);*/
+        if (dpiStmt_execute(stmt, 0, NULL) < 0)
+        {
+            dpiStmt_release(stmt);
+            throw std::runtime_error(oracleErrorMsg());
+        }
+      
+        dpiStmt_release(stmt);
     }
 }
